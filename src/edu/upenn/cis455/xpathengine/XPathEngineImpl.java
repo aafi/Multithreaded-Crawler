@@ -1,6 +1,9 @@
 package edu.upenn.cis455.xpathengine;
 
+import java.io.InputStream;
+
 import org.w3c.dom.Document;
+import org.xml.sax.helpers.DefaultHandler;
 
 public class XPathEngineImpl implements XPathEngine {
 
@@ -21,5 +24,17 @@ public class XPathEngineImpl implements XPathEngine {
     /* TODO: Check whether the document matches the XPath expressions */
     return null; 
   }
+
+@Override
+public boolean isSAX() {
+	// TODO Auto-generated method stub
+	return false;
+}
+
+@Override
+public boolean[] evaluateSAX(InputStream document, DefaultHandler handler) {
+	// TODO Auto-generated method stub
+	return null;
+}
         
 }
