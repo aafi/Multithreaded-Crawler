@@ -5,6 +5,11 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.*;
 
+import org.w3c.dom.Document;
+
+import edu.upenn.cis455.xpathengine.XPathEngineFactory;
+import edu.upenn.cis455.xpathengine.XPathEngineImpl;
+
 @SuppressWarnings("serial")
 public class XPathServlet extends HttpServlet {
 	
@@ -14,14 +19,17 @@ public class XPathServlet extends HttpServlet {
 
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-//		PrintWriter out = response.getWriter();
-//		out.write(request.getParameter("xpath_query"));
-//		out.write(request.getParameter("document"));
-//		out.flush();
-		
+		//Get the query parameters from the post request
 		String xpath_query = request.getParameter("xpath_query");
 		String document = request.getParameter("document");
 		
+		//Get an object of XPathEngineImpl
+		XPathEngineImpl xpath = (XPathEngineImpl) XPathEngineFactory.getXPathEngine();
+		Document d = Utilities.buildXmlDom(document);
+		
+		PrintWriter out = response.getWriter();
+		out.write(d.getFirstChild().getNodeName());
+		out.flush();
 		
 	}
 
@@ -49,7 +57,7 @@ public class XPathServlet extends HttpServlet {
 		
 		response.setContentLength(sb.toString().length());
 		out.write(sb.toString());
-		out.flush();
+		response.flushBuffer();
 	}
 
 }
