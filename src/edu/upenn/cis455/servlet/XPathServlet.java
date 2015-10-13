@@ -20,15 +20,53 @@ public class XPathServlet extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		//Get the query parameters from the post request
-		String xpath_query = request.getParameter("xpath_query");
+		String[] xpath_query = request.getParameter("xpath_query").split(";");
 		String document = request.getParameter("document");
+		
+		Document d = Utilities.buildXmlDom(document);
 		
 		//Get an object of XPathEngineImpl
 		XPathEngineImpl xpath = (XPathEngineImpl) XPathEngineFactory.getXPathEngine();
-		Document d = Utilities.buildXmlDom(document);
+		
+		//Set the queries to be evaluated
+		xpath.setXPaths(xpath_query);
+		
+		//Evaluate the document for matching queries
+		boolean [] match = xpath.evaluate(d);
+		
+		boolean success = false;
+		StringBuilder sb = new StringBuilder();
+		
+		for(int i=0;i<match.length;i++){
+			if(match[i] == true){
+				success = true;
+				sb.append(xpath_query[i]);
+				sb.append("<br>");
+			}
+		}
+		
+		String start =
+				"<html>" +
+				"<title> User Page </title>" +
+				"<body>";
+		
+		String end =
+				"</body>" +
+				"</html>";
+		
+		String page;
+		if(success){
+			page = start+"SUCCESS!! <br><br> Matches are: <br>"+sb.toString()+end;
+		}else{
+			page = start+"FAILED!! <br><br> No matches found! <br>"+end;
+		}
+		
 		
 		PrintWriter out = response.getWriter();
-		out.write(d.getFirstChild().getNodeName());
+//		out.write("Number of xpath queries: "+xpath_query.length);
+//		out.write(xpath_query[0]);
+//		out.write(d.getFirstChild().getNodeName());
+		out.write(page);
 		out.flush();
 		
 	}
@@ -44,6 +82,7 @@ public class XPathServlet extends HttpServlet {
 				"<body>";
 		String body = "<form action=\"/servlet/xpath\" method = \"post\">"
 					  +"XPath Query: <br>"
+					  +"Please enter multiple queries separated by a semi-colon or ; <br>"
 					  +"<input type=\"text\" name=\"xpath_query\" <br> <br>"
 					  +"HTML/XML Document: <br>"
 					  +"<input type=\"text\" name=\"document\" <br> <br>"
