@@ -8,7 +8,7 @@ import org.xml.sax.helpers.DefaultHandler;
 public class XPathEngineImpl implements XPathEngine {
 	
 	private String [] queries = null;
-	private Document doc = null;
+	private boolean [] valid;
 	
 	public XPathEngineImpl() {
 		// Do NOT add arguments to the constructor!!
@@ -21,18 +21,18 @@ public class XPathEngineImpl implements XPathEngine {
 	}
 
 	public boolean isValid(int i) {
-		return checkValidity(queries[i]);
+		return valid[i];
 	}
 	
 	public boolean[] evaluate(Document d) { 
 		/* TODO: Check whether the document matches the XPath expressions */
-		doc = d;
 		boolean [] b = new boolean[queries.length];
 		
 		for(int i = 0; i<queries.length;i ++){
-			if(isValid(i)){
-				b[i] = true;
-//				b[i] = checkMatch(queries[i]);
+			CheckXPathValidity checkValid = new CheckXPathValidity();
+			valid[i] = checkValidity(queries[i],checkValid);
+			if(valid[i]){
+				b[i] = checkMatch(queries[i],d, checkValid);
 			}else
 				b[i] = false;
 		}
@@ -40,14 +40,15 @@ public class XPathEngineImpl implements XPathEngine {
 		return b;
 	}
 	
-	private boolean checkValidity(String xpath){
+	private boolean checkValidity(String xpath, CheckXPathValidity checkValid){
 		
-		return CheckXPathValidity.checkValidity("xpath",xpath);
+		return checkValid.checkValidity("xpath",xpath);
 	}
 	
-	private boolean checkMatch(String xpath){
+	private boolean checkMatch(String xpath, Document d, CheckXPathValidity checkValid){
 		
-		return false;
+		CheckDocumentMatch docMatch = new CheckDocumentMatch();
+		return docMatch.checkMatch(checkValid.node_list,0,d.getFirstChild());
 	}
 
 	@Override
