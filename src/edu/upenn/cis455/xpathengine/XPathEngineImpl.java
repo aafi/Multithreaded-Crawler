@@ -8,6 +8,7 @@ import org.xml.sax.helpers.DefaultHandler;
 public class XPathEngineImpl implements XPathEngine {
 	
 	private String [] queries = null;
+	private Document doc = null;
 	
 	public XPathEngineImpl() {
 		// Do NOT add arguments to the constructor!!
@@ -20,16 +21,33 @@ public class XPathEngineImpl implements XPathEngine {
 	}
 
 	public boolean isValid(int i) {
-		/* TODO: Check which of the XPath expressions are valid */
-		return false;
+		return checkValidity(queries[i]);
 	}
 	
 	public boolean[] evaluate(Document d) { 
 		/* TODO: Check whether the document matches the XPath expressions */
-		
+		doc = d;
 		boolean [] b = new boolean[queries.length];
+		
+		for(int i = 0; i<queries.length;i ++){
+			if(isValid(i)){
+				b[i] = true;
+//				b[i] = checkMatch(queries[i]);
+			}else
+				b[i] = false;
+		}
+		
 		return b;
-		//return null; 
+	}
+	
+	private boolean checkValidity(String xpath){
+		
+		return CheckXPathValidity.checkValidity("xpath",xpath);
+	}
+	
+	private boolean checkMatch(String xpath){
+		
+		return false;
 	}
 
 	@Override

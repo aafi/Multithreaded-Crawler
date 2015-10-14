@@ -66,6 +66,7 @@ public class XPathServlet extends HttpServlet {
 //		out.write("Number of xpath queries: "+xpath_query.length);
 //		out.write(xpath_query[0]);
 //		out.write(d.getFirstChild().getNodeName());
+		response.setStatus(200);
 		out.write(page);
 		out.flush();
 		
@@ -80,7 +81,8 @@ public class XPathServlet extends HttpServlet {
 				"<html>" +
 				"<title> User Page </title>" +
 				"<body>";
-		String body = "<form action=\"/servlet/xpath\" method = \"post\">"
+		String body = "NAME: ANWESHA DAS <br>Pennkey: anwesha<br><br>"
+					  +"<form action=\"/servlet/xpath\" method = \"post\">"
 					  +"XPath Query: <br>"
 					  +"Please enter multiple queries separated by a semi-colon or ; <br>"
 					  +"<input type=\"text\" name=\"xpath_query\" <br> <br>"
