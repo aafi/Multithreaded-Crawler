@@ -27,12 +27,14 @@ public class XPathEngineImpl implements XPathEngine {
 	public boolean[] evaluate(Document d) { 
 		/* TODO: Check whether the document matches the XPath expressions */
 		boolean [] b = new boolean[queries.length];
+		valid = new boolean[queries.length];
 		
 		for(int i = 0; i<queries.length;i ++){
 			CheckXPathValidity checkValid = new CheckXPathValidity();
 			valid[i] = checkValidity(queries[i],checkValid);
 			if(valid[i]){
-				b[i] = checkMatch(queries[i],d, checkValid);
+				System.out.print("Query is valid");
+				b[i] = checkMatch(d, checkValid);
 			}else
 				b[i] = false;
 		}
@@ -45,7 +47,7 @@ public class XPathEngineImpl implements XPathEngine {
 		return checkValid.checkValidity("xpath",xpath);
 	}
 	
-	private boolean checkMatch(String xpath, Document d, CheckXPathValidity checkValid){
+	private boolean checkMatch(Document d, CheckXPathValidity checkValid){
 		
 		CheckDocumentMatch docMatch = new CheckDocumentMatch();
 		return docMatch.checkMatch(checkValid.node_list,0,d.getFirstChild());

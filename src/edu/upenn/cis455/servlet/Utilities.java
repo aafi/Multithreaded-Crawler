@@ -1,5 +1,6 @@
 package edu.upenn.cis455.servlet;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -26,6 +27,7 @@ public class Utilities {
 //			e1.printStackTrace();
 //		}
 		
+		InputStream is = new ByteArrayInputStream(filename.getBytes());
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder docBuilder;
 		Document doc = null;
@@ -34,7 +36,7 @@ public class Utilities {
 			docBuilder = docFactory.newDocumentBuilder();
 			
 			//TODO pass absolute filename? or InputStream?
-			doc = docBuilder.parse(filename);
+			doc = docBuilder.parse(is);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

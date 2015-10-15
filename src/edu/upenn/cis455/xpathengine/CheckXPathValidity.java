@@ -88,7 +88,6 @@ public class CheckXPathValidity {
 				
 				//Get the test part
 				if(query.charAt(i) == '['){
-					System.out.println("Inside square condition for nodename "+nodename.toString());
 					int open = 0;
 					StringBuilder sb = new StringBuilder();
 					while(true){
@@ -128,8 +127,6 @@ public class CheckXPathValidity {
 					
 			} //End of query parsing
 			
-			for(int x=0;x<test.size();x++)
-				System.out.println(test.get(x));
 			
 			//Build our linkedlist with xpath nodes
 			DocumentNodes doc_node = new DocumentNodes();
