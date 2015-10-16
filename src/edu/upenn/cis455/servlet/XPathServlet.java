@@ -1,11 +1,23 @@
 package edu.upenn.cis455.servlet;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.URL;
 
 import javax.servlet.http.*;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.tidy.Tidy;
 
 import edu.upenn.cis455.xpathengine.XPathEngineFactory;
 import edu.upenn.cis455.xpathengine.XPathEngineImpl;
@@ -13,35 +25,120 @@ import edu.upenn.cis455.xpathengine.XPathEngineImpl;
 @SuppressWarnings("serial")
 public class XPathServlet extends HttpServlet {
 	
-	/* TODO: Implement user interface for XPath engine here */
-	
-	/* You may want to override one or both of the following methods */
-
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		//Get the query parameters from the post request
 		String[] xpath_query = request.getParameter("xpath_query").split(";");
 		String document = request.getParameter("document");
 		
-		Document d = Utilities.buildXmlDom(document);
+		/**Open Connection and Retrieve document**/
+		URL url = new URL(document);
+		String servername = url.getHost();
+		int port = url.getPort();
+		if(port==-1)
+			port = 80;
 		
-		//Get an object of XPathEngineImpl
-		XPathEngineImpl xpath = (XPathEngineImpl) XPathEngineFactory.getXPathEngine();
+		Socket socket = new Socket(servername,port);
+		String requestLine = "GET "+url.getPath()+" HTTP/1.0 \r\n"
+							//  +"Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+							  +"\r\n";
+		OutputStream output = socket.getOutputStream();
+		output.write(requestLine.getBytes());
 		
-		//Set the queries to be evaluated
-		xpath.setXPaths(xpath_query);
-		
-		//Evaluate the document for matching queries
-		boolean [] match = xpath.evaluate(d);
-		
+		//Get the response
+		InputStream input = socket.getInputStream();
+		BufferedReader br = new BufferedReader(new InputStreamReader(input));
+
+		String line = br.readLine();
 		boolean success = false;
+		boolean error = false;
+		boolean isHtml = false;
 		StringBuilder sb = new StringBuilder();
-		
-		for(int i=0;i<match.length;i++){
-			if(match[i] == true){
-				success = true;
-				sb.append(xpath_query[i]);
-				sb.append("<br>");
+		if(line == null || line.equals(""))
+			error = true;
+		else if(!line.split(" ")[1].equals("200")){
+			error = true;
+			sb.append(line.split(" ")[1]+" "+line.split(" ")[2]);
+			sb.append("<br>");
+		}
+		else{
+			line = br.readLine();
+			Integer len = null;
+			while(line!=null && !line.equals("")){
+				if(line.contains(":")){
+					String header  = line.split(":")[0].trim().toLowerCase();
+					if(header.contains("content-length")){
+						len = Integer.parseInt(line.split(":")[1].trim());
+					}
+					if(header.contains("content-type")){
+						if(line.split(":")[1].trim().equals("text/html")){
+							isHtml = true;
+						}
+					}
+				}
+				line = br.readLine();
+			}
+			
+			String doc = null;
+			if(len!=null){
+				int total_read = 0;
+				int b;
+				StringBuilder s = new StringBuilder();
+				while(total_read<len && ((b = br.read())!=-1)){
+					s.append((char)b);
+					total_read++;
+				}
+				doc = s.toString();
+			}
+			
+			socket.close();
+			
+			if(doc == null){
+				error = true;
+				sb.append("No file served <br>");
+			}else{
+			
+				if(isHtml){
+					Tidy tidy = new Tidy();
+					tidy.setInputEncoding("UTF-8");
+				    tidy.setOutputEncoding("UTF-8");
+				    tidy.setXmlOut(true);
+				    tidy.setSmartIndent(true);
+				    ByteArrayInputStream inputStream = new ByteArrayInputStream(doc.getBytes("UTF-8"));
+				    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+				    tidy.parseDOM(inputStream, outputStream);
+				    doc = outputStream.toString("UTF-8");
+				    System.out.println("DATA is: \n"+doc);
+				}
+				
+				Document d = Utilities.buildXmlDom(doc);
+				/****DEBUG DELETE *********/
+	//			System.out.println("TREEEEEEE :");
+	//			printNode(d);
+	//			System.out.println("End of tree");
+				/****DEBUG DELETE *********/
+			
+				//Get an object of XPathEngineImpl
+				XPathEngineImpl xpath = (XPathEngineImpl) XPathEngineFactory.getXPathEngine();
+			
+				//Set the queries to be evaluated
+				xpath.setXPaths(xpath_query);
+				xpath.setHtml(isHtml);
+			
+				//Evaluate the document for matching queries
+				boolean [] match = xpath.evaluate(d);
+			
+			
+				for(int i=0;i<match.length;i++){
+					if(match[i] == true){
+						success = true;
+						sb.append(xpath_query[i]+" ---- SUCCESS");
+						sb.append("<br>");
+					}else{
+						sb.append(xpath_query[i]+" ---- FAILURE");
+						sb.append("<br>");
+					}
+				}
 			}
 		}
 		
@@ -56,16 +153,16 @@ public class XPathServlet extends HttpServlet {
 		
 		String page;
 		if(success){
-			page = start+"SUCCESS!! <br><br> Matches are: <br>"+sb.toString()+end;
+			page = start+"One or more queries matched. <br><br> Matches are: <br>"+sb.toString()+end;
 		}else{
-			page = start+"FAILED!! <br><br> No matches found! <br>"+end;
+			if(error)
+				page = start+sb.toString()+end;
+			else
+				page = start+"FAILED!! <br><br> No matches found! <br>"+end;
 		}
 		
 		
 		PrintWriter out = response.getWriter();
-//		out.write("Number of xpath queries: "+xpath_query.length);
-//		out.write(xpath_query[0]);
-//		out.write(d.getFirstChild().getNodeName());
 		response.setStatus(200);
 		out.write(page);
 		out.flush();
@@ -100,6 +197,7 @@ public class XPathServlet extends HttpServlet {
 		out.write(sb.toString());
 		response.flushBuffer();
 	}
+	
 
 }
 

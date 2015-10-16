@@ -35,6 +35,18 @@ public class CheckXPathValidity {
 			if(query.startsWith("/"))
 				return false;
 			
+			if(query.contains("::"))
+				return false;
+			
+			if(query.startsWith("-"))
+				return false;
+			
+			if(query.startsWith("."))
+				return false;
+			
+			if(Character.isDigit(query.charAt(0)))
+				return false;
+			
 			return true;
 			
 		case "test":
@@ -185,20 +197,32 @@ public class CheckXPathValidity {
 			if(query.startsWith("/"))
 				return false;
 			
+			if(query.contains("::"))
+				return false;
+			
+			if(query.startsWith("-"))
+				return false;
+			
+			if(query.startsWith("."))
+				return false;
+			
+			if(Character.isDigit(query.charAt(0)))
+				return false;
+			
 			return true;
 			
 		case "test":
-			Pattern patt_text = Pattern.compile("\\s*(text)\\s*\\(\\s*\\)\\s*=\\s*\".*\"\\s*");
+			Pattern patt_text = Pattern.compile("\\s*text\\s*\\(\\s*\\)\\s*=\\s*\\\"(.*)\\\"\\s*");
 			Matcher text = patt_text.matcher(query);
 			if(text.matches())
 				return true;
 			
-			Pattern patt_contains = Pattern.compile("\\s*contains\\s*\\(\\s*text\\(\\s*\\),\\s*\".*\"\\)\\s*");
+			Pattern patt_contains = Pattern.compile("\\s*contains\\s*\\(\\s*text\\s*\\(\\s*\\)\\s*,\\s*\"(.*)\"\\s*\\)\\s*");
 			Matcher contains = patt_contains.matcher(query);
 			if(contains.matches())
 				return true;
 			
-			Pattern patt_att = Pattern.compile("\\s*@[a-zA-Z0-9]*\\s*=\\s*\".*\"\\s*");
+			Pattern patt_att = Pattern.compile("\\s*@\\s*([a-zA-Z0-9]*)\\s*=\\s*\"(.*)\"\\s*");
 			Matcher att = patt_att.matcher(query);
 			if(att.matches())
 				return true;
@@ -269,7 +293,6 @@ public class CheckXPathValidity {
 				}
 				
 				i++;
-				
 			} //End of query parsing
 			
 			if(test.size()!=0){
@@ -295,24 +318,4 @@ public class CheckXPathValidity {
 		return false;
 	}
 	
-//	public static void main(String [] args){
-//		boolean something = checkValidity("xpath","/this/that[something/else][ok]/yes[dhrubeel]");
-////		Pattern patt_text = Pattern.compile("^.*[\\s*\\[(.*\\)]]*[\\s*\\/.*]?");
-////		Matcher text = patt_text.matcher("/foo/bar[@attname= something]/xyz");
-////		text.matches();
-////		System.out.print(text.group(1));
-////		System.out.println(something);
-//		
-//		System.out.println(node_list.size());
-//		for(int i=0;i<node_list.size();i++){
-//			System.out.println(node_list.get(i).getName());
-//			if(!node_list.get(i).getFilter().isEmpty()){
-//				System.out.println(node_list.get(i).getFilter().size());
-//				System.out.println(node_list.get(i).getFilter().get(0));
-//				System.out.println(node_list.get(i).getFilter().get(1));
-//			}
-//			System.out.println();
-//		}
-//	}
-
 }

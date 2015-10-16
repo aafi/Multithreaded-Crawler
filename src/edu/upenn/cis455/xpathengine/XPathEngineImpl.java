@@ -3,12 +3,14 @@ package edu.upenn.cis455.xpathengine;
 import java.io.InputStream;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 import org.xml.sax.helpers.DefaultHandler;
 
 public class XPathEngineImpl implements XPathEngine {
 	
 	private String [] queries = null;
 	private boolean [] valid;
+	private boolean isHtml = false;
 	
 	public XPathEngineImpl() {
 		// Do NOT add arguments to the constructor!!
@@ -33,7 +35,7 @@ public class XPathEngineImpl implements XPathEngine {
 			CheckXPathValidity checkValid = new CheckXPathValidity();
 			valid[i] = checkValidity(queries[i],checkValid);
 			if(valid[i]){
-				System.out.print("Query is valid");
+				System.out.println("Query is valid");
 				b[i] = checkMatch(d, checkValid);
 			}else
 				b[i] = false;
@@ -49,8 +51,33 @@ public class XPathEngineImpl implements XPathEngine {
 	
 	private boolean checkMatch(Document d, CheckXPathValidity checkValid){
 		
-		CheckDocumentMatch docMatch = new CheckDocumentMatch();
-		return docMatch.checkMatch(checkValid.node_list,0,d.getFirstChild());
+		CheckDocumentMatch docMatch = new CheckDocumentMatch(isHtml);
+		
+		NodeList children = d.getChildNodes();
+		int number_of_children = d.getChildNodes().getLength();
+		boolean return_value = false;
+		
+		if(number_of_children == 0){
+			return false;
+		}else{
+			for(int i = 0; i<number_of_children;i++){
+				if(docMatch.checkMatch(checkValid.node_list,0,children.item(i)))
+					return_value = true;
+			}
+		}
+		return return_value;
+	}
+	
+	public String [] getQueries(){
+		return queries;
+	}
+	
+	public void setHtml(boolean value){
+		isHtml = value;
+	}
+	
+	public boolean getHtml(){
+		return isHtml;
 	}
 
 	@Override
