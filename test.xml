@@ -6,7 +6,7 @@
 
  <web-app name="First">
    <display-name>Channel Subscription Servlets</display-name>
-   <context-param>context-node
+   <context-param>cont"ex"t-node
      <param-name>BDBstore</param-name>
      <param-value>database</param-value>
    </context-param>

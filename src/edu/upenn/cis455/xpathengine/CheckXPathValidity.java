@@ -9,6 +9,13 @@ public class CheckXPathValidity {
 	private static Pattern test_pattern = Pattern.compile("^.*[\\s*\\[.*\\]]*[\\s*\\/.*]?");
 	public LinkedList <DocumentNodes> node_list = new LinkedList <DocumentNodes>();
 	
+	/**
+	 * Checks whether the given xpath query is syntatically valid according to the guven grammar.
+	 * Performs recursive descent parsing.
+	 * @param starting label of each grammar step
+	 * @param query to be checked
+	 * @return if the query is syntactically valid
+	 */
 	public boolean checkValidity(String label, String query){
 		switch (label){
 		case "xpath": 
@@ -170,7 +177,12 @@ public class CheckXPathValidity {
 		return false;
 	}
 	
-	
+	/**
+	 * Checks whether the conditions present inside the test/filter condition for each node is syntactically valid.
+	 * @param xpath grammar label
+	 * @param test query condition
+	 * @return whether the test condition is syntactically valid
+	 */
 	private boolean checkTestValidity(String label, String query){
 		switch (label){
 		case "xpath": 
@@ -243,10 +255,11 @@ public class CheckXPathValidity {
 			StringBuilder nodename = new StringBuilder();
 			String axis_step = null;
 			ArrayList<String> test = new ArrayList<String>();
+			boolean found_nodename = false;
 			
 			while(i<query.length()){
 				
-				while(query.charAt(i)!='[' && query.charAt(i)!='/'){
+				while(!found_nodename && query.charAt(i)!='[' && query.charAt(i)!='/'){
 					nodename.append(query.charAt(i));
 					i++;
 					
@@ -254,6 +267,7 @@ public class CheckXPathValidity {
 						break;
 				}
 				
+				found_nodename = true;
 				if(i>=query.length())
 					break;
 				
@@ -290,9 +304,9 @@ public class CheckXPathValidity {
 					//Our grammar does not accept '//'
 					if(query.charAt(i+1)=='/')
 						return false;
+					break;
 				}
-				
-				i++;
+			
 			} //End of query parsing
 			
 			if(test.size()!=0){

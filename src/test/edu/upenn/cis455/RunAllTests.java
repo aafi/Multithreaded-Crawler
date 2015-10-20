@@ -9,7 +9,7 @@ public class RunAllTests extends TestCase
   public static Test suite() 
   {
     try {
-      Class[]  testClasses = {
+      Class[]  testClasses = {Class.forName(XPathEngineTest.class.getName())
         /* TODO: Add the names of your unit test classes here */
         // Class.forName("your.class.name.here") 
       };   

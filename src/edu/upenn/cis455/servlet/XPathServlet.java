@@ -24,7 +24,13 @@ import edu.upenn.cis455.xpathengine.XPathEngineImpl;
 
 @SuppressWarnings("serial")
 public class XPathServlet extends HttpServlet {
-	
+	public String body;
+	/**
+	 * doPost method which opens a connection to the URL given by the user and fetches the document.
+	 * It then calls the appropriate methods to perform checks on whether the URL matches or not.
+	 * @param HttpServletRequest object
+	 * @param HttpServletResponse object 
+	 */
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		//Get the query parameters from the post request
@@ -112,11 +118,6 @@ public class XPathServlet extends HttpServlet {
 				}
 				
 				Document d = Utilities.buildXmlDom(doc);
-				/****DEBUG DELETE *********/
-	//			System.out.println("TREEEEEEE :");
-	//			printNode(d);
-	//			System.out.println("End of tree");
-				/****DEBUG DELETE *********/
 			
 				//Get an object of XPathEngineImpl
 				XPathEngineImpl xpath = (XPathEngineImpl) XPathEngineFactory.getXPathEngine();
@@ -162,12 +163,22 @@ public class XPathServlet extends HttpServlet {
 		}
 		
 		
+		
 		PrintWriter out = response.getWriter();
 		response.setStatus(200);
+//		this.body = page;
+//		System.out.println(body);
 		out.write(page);
 		out.flush();
 		
 	}
+	
+	/**
+	 * doGet method generates a form for the user which takes in the xpath queries and the document url.
+	 * Generates a post request with the given information.
+	 * @param HttpServletRequest object
+	 * @param HttpServletResponse object
+	 */
 
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -178,12 +189,12 @@ public class XPathServlet extends HttpServlet {
 				"<html>" +
 				"<title> User Page </title>" +
 				"<body>";
-		String body = "NAME: ANWESHA DAS <br>Pennkey: anwesha<br><br>"
+		String body = "NAME: ANWESHA DAS <br>SEAS login: anwesha<br><br>"
 					  +"<form action=\"/servlet/xpath\" method = \"post\">"
 					  +"XPath Query: <br>"
 					  +"Please enter multiple queries separated by a semi-colon or ; <br>"
 					  +"<input type=\"text\" name=\"xpath_query\" <br> <br>"
-					  +"HTML/XML Document: <br>"
+					  +"HTML/XML Document URL: <br>"
 					  +"<input type=\"text\" name=\"document\" <br> <br>"
 					  +"<input type=\"submit\" value=\"Submit\">";
 		String end =

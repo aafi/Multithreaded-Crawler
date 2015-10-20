@@ -16,18 +16,31 @@ public class XPathEngineImpl implements XPathEngine {
 		// Do NOT add arguments to the constructor!!
 	}
 	
+	/**
+	 * Sets the user input xpaths
+	 * @param String array containing user given xpaths
+	 */
 	public void setXPaths(String[] s) {
 		/* TODO: Store the XPath expressions that are given to this method */
 		queries = s;
 		
 	}
-
+	
+	/**
+	 * Checks whether the i'th xpath is syntactically valid
+	 * @param index i
+	 * @return boolean indicating validity
+	 */
 	public boolean isValid(int i) {
 		return valid[i];
 	}
 	
+	/**
+	 * Evaluates whether the user given xpaths match the given document
+	 * @param The document to be matched to
+	 * @return Boolean array indicating which xpaths matched
+	 */
 	public boolean[] evaluate(Document d) { 
-		/* TODO: Check whether the document matches the XPath expressions */
 		boolean [] b = new boolean[queries.length];
 		valid = new boolean[queries.length];
 		
@@ -35,7 +48,6 @@ public class XPathEngineImpl implements XPathEngine {
 			CheckXPathValidity checkValid = new CheckXPathValidity();
 			valid[i] = checkValidity(queries[i],checkValid);
 			if(valid[i]){
-				System.out.println("Query is valid");
 				b[i] = checkMatch(d, checkValid);
 			}else
 				b[i] = false;
@@ -44,11 +56,24 @@ public class XPathEngineImpl implements XPathEngine {
 		return b;
 	}
 	
+	/**
+	 * Calls the appropriate method to perform the syntactic validity check
+	 * @param xpath to be checked
+	 * @param checkValid
+	 * @return boolean variable indicating validity
+	 */
 	private boolean checkValidity(String xpath, CheckXPathValidity checkValid){
 		
 		return checkValid.checkValidity("xpath",xpath);
 	}
 	
+	/**
+	 * Calls the appropriate method to check if the xpaths match with all the children nodes of 
+	 * the document root
+	 * @param document to be matched against
+	 * @param checkValid
+	 * @return boolean indicating match
+	 */
 	private boolean checkMatch(Document d, CheckXPathValidity checkValid){
 		
 		CheckDocumentMatch docMatch = new CheckDocumentMatch(isHtml);
@@ -56,7 +81,6 @@ public class XPathEngineImpl implements XPathEngine {
 		NodeList children = d.getChildNodes();
 		int number_of_children = d.getChildNodes().getLength();
 		boolean return_value = false;
-		
 		if(number_of_children == 0){
 			return false;
 		}else{
@@ -68,14 +92,26 @@ public class XPathEngineImpl implements XPathEngine {
 		return return_value;
 	}
 	
+	/**
+	 * Getter method for queries array
+	 * @return queries array
+	 */
 	public String [] getQueries(){
 		return queries;
 	}
 	
+	/**
+	 * Sets the boolean indicating if the given document is an xpath
+	 * @param value
+	 */
 	public void setHtml(boolean value){
 		isHtml = value;
 	}
 	
+	/**
+	 * Getter method for isHtml flag
+	 * @return value of isHtml flag
+	 */
 	public boolean getHtml(){
 		return isHtml;
 	}

@@ -14,6 +14,11 @@ import org.xml.sax.SAXException;
 
 public class Utilities {
 	
+	/**
+	 * Builds a DOM object given the contents of XML/HTML file
+	 * @param contents of the file
+	 * @return the DOM object
+	 */
 	public static Document buildXmlDom(String content){
 		InputSource is = new InputSource(new StringReader(content));
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();

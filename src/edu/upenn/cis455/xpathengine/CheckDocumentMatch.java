@@ -5,18 +5,32 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import edu.upenn.cis455.servlet.Utilities;
 
 
 public class CheckDocumentMatch {
 	private boolean isHtml = false;
 	
+	/**
+	 * Constructor 
+	 * @param value of isHtml flag
+	 */
 	public CheckDocumentMatch(boolean value){
 		isHtml = value;
 	}
 	
+	/**
+	 * Recursively checks if the given xpath query matches the document
+	 * @param node_list containing the given xpath query
+	 * @param current idx
+	 * @param current node to be checked against
+	 * @return whether the xpath matches the document
+	 */
 	public boolean checkMatch(LinkedList <DocumentNodes> node_list, int idx, Node node){
 		if(node == null || idx >= node_list.size())
 			return false;
@@ -62,6 +76,13 @@ public class CheckDocumentMatch {
 		return false;
 	}
 	
+	/**
+	 * Checks the test conditions for each node
+	 * @param filter condition to be checked
+	 * @param node to which the filter belongs
+	 * @return whether the filter applies
+	 */
+	
 	private boolean checkFilter(String filter,Node node){
 		
 		//Atomic Tests
@@ -80,7 +101,6 @@ public class CheckDocumentMatch {
 			
 			if(isHtml)
 				content = content.toLowerCase();
-			
 			if(nodeTextContent.equals(content))
 				return true;
 			else
