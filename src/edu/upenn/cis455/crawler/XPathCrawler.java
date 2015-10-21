@@ -1,6 +1,12 @@
 package edu.upenn.cis455.crawler;
 
+import java.io.File;
+
 public class XPathCrawler {
+	
+	public static String dir;
+	public static int size;
+	
 	public static void main(String [] args){
 		if(args.length < 3 || args.length > 4){
 			System.out.println("Invalid number of arguments");
@@ -9,8 +15,15 @@ public class XPathCrawler {
 		
 		/** GET COMMAND LINE ARGUMENTS **/
 		String seed_url = args[0];
-		String dir = args[1];
-		int size, num_of_files;
+		dir = args[1];
+		
+		//If directory does not exist, create it
+		File directory = new File(dir);
+		if(!directory.exists()){
+			directory.mkdir();
+		}
+		
+		int num_of_files;
 		
 		try{
 			size = Integer.parseInt(args[2]);

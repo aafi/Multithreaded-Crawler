@@ -4,6 +4,7 @@ import java.io.File;
 
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
+import com.sleepycat.persist.EntityCursor;
 import com.sleepycat.persist.EntityStore;
 import com.sleepycat.persist.StoreConfig;
 
@@ -79,6 +80,22 @@ public class DBWrapper {
 	 */
 	public DomainEntity getDomainInfo(String url){
 		return da.domain.get(url);
+	}
+	
+	/**
+	 * Checks if the database contains the url content
+	 * @param url to be checked
+	 * @return boolean indicating presence or absence
+	 */
+	public boolean containsDomain(String url){
+		EntityCursor <DomainEntity> domain_pcursor = da.domain.entities();
+		
+		for(DomainEntity info : domain_pcursor){
+			if(info.getUrl().equals(url))
+				return true;
+		}
+		
+		return false;
 	}
 	
 //	public static void main(String [] args){

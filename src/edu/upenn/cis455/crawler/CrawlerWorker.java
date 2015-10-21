@@ -1,8 +1,19 @@
 package edu.upenn.cis455.crawler;
 
+import java.io.IOException;
+import java.util.Date;
+
 import edu.upenn.cis455.crawler.info.URLInfo;
+import edu.upenn.cis455.storage.DBWrapper;
+import edu.upenn.cis455.storage.DomainEntity;
 
 public class CrawlerWorker implements Runnable{
+	
+	private DBWrapper db;
+	
+	public CrawlerWorker(){
+		db = new DBWrapper(XPathCrawler.dir);
+	}
 	
 	/**
 	 * Run method for threads.
@@ -27,6 +38,12 @@ public class CrawlerWorker implements Runnable{
 				}
 			} //End of synchronized block
 			
+			//Check if the URL was already visited
+			synchronized(UrlQueue.visited){
+				if(UrlQueue.visited.contains(url))
+					continue;
+			}
+			
 			
 			/** Check if URL domain was hit before **/
 			String domain = null;
@@ -40,16 +57,10 @@ public class CrawlerWorker implements Runnable{
 				protocol = "https://";
 			}
 			
+			boolean isRobotTxt = false;
 			if(DomainInfoList.contains(domain)){
-				if(!DomainInfoList.isPastDelay(domain)){
-					//Put URL back in the queue if crawl delay is still active
-					synchronized(UrlQueue.queue){
-						UrlQueue.queue.add(url);
-					}
-					continue;
-				}else{ //TODO
-					//Check robots.txt if the requested URL is disallowed
-				}
+				//TODO check for disallowed links in robots.txt
+				
 			}else{ //This domain was not hit before
 				
 				//Put URL back in the queue as we need to get robots.txt
@@ -57,6 +68,7 @@ public class CrawlerWorker implements Runnable{
 					UrlQueue.queue.add(url);
 				}
 				url = protocol+domain+"/robots.txt";
+				isRobotTxt = true;
 			}
 			
 			/**
@@ -69,6 +81,73 @@ public class CrawlerWorker implements Runnable{
 			 * If it has, we will fetch and parse the new document. If not we parse the same document.
 			 * If the document doesn't exist in the database, we fetch and parse the document.
 			 */
+			
+			boolean found_in_db = false;
+			HttpClient http_client;
+			if(db.containsDomain(url)){
+				found_in_db = true;
+				Date last_hit = db.getDomainInfo(url).getLast_checked();
+				http_client = new HttpClient(found_in_db,last_hit);
+			}else{
+				http_client = new HttpClient();
+			}
+			
+			String result;
+			String contents = null;
+			try {
+				result = http_client.doWork(url, XPathCrawler.size);
+			} catch (IOException e) {
+				synchronized(UrlQueue.visited){
+					UrlQueue.visited.add(url);
+				}
+				continue;
+			}
+			
+			if(result.equals("Error") || result.equals("301")){
+				synchronized(UrlQueue.visited){
+					UrlQueue.visited.add(url);
+				}
+				continue;
+			}
+			
+			boolean updated = true;
+			//Get contents requested
+			if(result.equals("304")){
+				updated = false;
+				contents = db.getDomainInfo(url).getRaw_content();
+			}else if(result.equals("Success")){
+				contents = http_client.getDocument();
+			}
+			
+			//add url to visited list
+			synchronized(UrlQueue.visited){
+				UrlQueue.visited.add(url);
+			}
+			
+			//call appropriate parse function if robot.txt
+			if(isRobotTxt){
+				//TODO Call robot parse
+			}else{
+				//Add information to database if updated
+				if(updated){
+					DomainEntity entity;
+					if(found_in_db){
+						entity = db.getDomainInfo(url);
+					}else{
+						entity = new DomainEntity();
+						entity.setUrl(url);
+						entity.setLast_checked(new Date());
+					}
+					
+					entity.setRaw_content(contents);
+					db.putDomainInfo(entity);
+				}
+			}
+			
+			if(http_client.getType().equals("text/html")){
+				//TODO call html parse
+			}
+			
 			
 			
 			
