@@ -1,17 +1,5 @@
 package edu.upenn.cis455.crawler;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.HashMap;
-
-import edu.upenn.cis455.crawler.info.URLInfo;
-
-
 public class XPathCrawler {
 	public static void main(String [] args){
 		if(args.length < 3 || args.length > 4){
@@ -40,9 +28,15 @@ public class XPathCrawler {
 			}
 		}
 		
-		/** PROCESS ARGUMENTS **/
+		/**
+		 * Add seed url to queue
+		 */
+		UrlQueue.queue.add(seed_url);
 		
-		
+		/**
+		 * Start threads
+		 */
+		//TODO
 		
 	}
 	
