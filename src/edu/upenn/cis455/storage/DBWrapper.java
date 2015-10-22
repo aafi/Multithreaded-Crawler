@@ -62,7 +62,7 @@ public class DBWrapper {
 	 * @param object to be added
 	 */
 	public void putDomainInfo(DomainEntity info){
-		System.out.println("Storing contents in db");
+//		System.out.println("Storing contents in db");
 		da.domain.put(info);
 	}
 	
@@ -100,19 +100,19 @@ public class DBWrapper {
 		return false;
 	}
 	
-	public static void main(String [] args){
-		String dir = "/home/cis455/git/hw2/testdb";
-		DBWrapper db = new DBWrapper(dir);
-		
-		db.setup();
-//		LoginInfo info = new LoginInfo();
-//		info.setUsername("admin2");
-//		info.setPassword("admin2");
-		
-//		db.putLoginInfo(info);
-		
-		DomainEntity result = db.getDomainInfo("https://dbappserv.cis.upenn.edu/crawltest.html");
-		System.out.println("Url: "+result.getUrl()+" raw content: "+result.getRaw_content());
-		db.shutdown();
-	}
+//	public static void main(String [] args){
+//		String dir = "/home/cis455/git/hw2/testdb";
+//		DBWrapper db = new DBWrapper(dir);
+//		
+//		db.setup();
+////		LoginInfo info = new LoginInfo();
+////		info.setUsername("admin2");
+////		info.setPassword("admin2");
+//		
+////		db.putLoginInfo(info);
+//		
+//		DomainEntity result = db.getDomainInfo("https://dbappserv.cis.upenn.edu/crawltest.html");
+//		System.out.println("Url: "+result.getUrl()+" raw content: "+result.getRaw_content());
+//		db.shutdown();
+//	}
 }

@@ -49,7 +49,7 @@ public class HttpClient {
 	 * @throws IOException
 	 */
 	public String doWork(String url, int size) throws UnknownHostException, IOException{
-		System.out.println(url);
+//		System.out.println(url);
 		requested_url = url;
 		URLInfo info = new URLInfo(url);
 		String host = info.getHostName();
@@ -93,7 +93,7 @@ public class HttpClient {
 			}
 			
 			String [] types = new String[]{"text/html","text/xml","application/xml"};
-			String type = connection.getContentType();
+			String type = connection.getContentType().split(";")[0].trim();
 			boolean f = false;
 			for(String t:types){
 				if(type.equals(t)){
@@ -194,11 +194,12 @@ public class HttpClient {
 			//Check for content-type
 			String [] allowed_types = new String[]{"text/html","text/xml","application/xml"};
 			if(headers.containsKey("content-type")){
-				String type = headers.get("content-type");
+				String type = headers.get("content-type").split(";")[0].trim();
 				boolean found = false;
 				for(String t:allowed_types){
 					if(type.equals(t)){
 						mime_type = type;
+						System.out.println(mime_type);
 						found = true;
 						break;
 					}
@@ -288,11 +289,14 @@ public class HttpClient {
 				this.document = doc;
 			}
 		}
+		
 		if(!isSecure)
 			socket_get.close();
+		
 		if(doc == null)
 			return false;
 		else{
+//			System.out.println(mime_type);
 			if(mime_type.endsWith("html") || mime_type.endsWith("xml"))
 				System.out.println(requested_url+": Downloading");
 			return true;

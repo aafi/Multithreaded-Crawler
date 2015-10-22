@@ -142,22 +142,18 @@ public class CrawlerWorker implements Runnable{
 						entity.setUrl(url);
 					}
 					
-//					System.out.println(contents);
 					entity.setLast_checked(new Date());
 					entity.setRaw_content(contents);
 					db.putDomainInfo(entity);
 				}
 			}
 			
-			System.out.println(db.containsDomain(url));
+//			System.out.println(db.containsDomain(url));
 			
 			if(http_client.getType().equals("text/html")){
-				//TODO call html parse
+				HtmlParser.parse(contents);
 			}
 			
-//			if(RobotTxtMapping.contains(domain)){
-//				RobotTxtMapping.get(domain).info.print();
-//			}
 			
 			
 		} //End of while

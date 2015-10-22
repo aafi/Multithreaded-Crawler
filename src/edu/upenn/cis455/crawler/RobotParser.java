@@ -15,7 +15,6 @@ public class RobotParser {
 	private static Pattern comment = Pattern.compile("\\s*#.*");
 	
 	public static void parse(String text, String domain_name){
-		System.out.println(text);
 		RobotsTxtInfo info = new RobotsTxtInfo();
 		String [] lines = text.split("\n");
 		String last_agent = null;
