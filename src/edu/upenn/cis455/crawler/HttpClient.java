@@ -6,11 +6,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.TimeZone;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import edu.upenn.cis455.crawler.info.URLInfo;
 
@@ -23,7 +26,9 @@ public class HttpClient {
 	private boolean found_in_db = false;
 	private Date last_hit = null;
 	private String document;
-	private String mime_type;
+	private String mime_type = "text/plain";
+	private String requested_url;
+	private boolean isSecure = false;
 	
 	public HttpClient(){
 		
@@ -44,19 +49,88 @@ public class HttpClient {
 	 * @throws IOException
 	 */
 	public String doWork(String url, int size) throws UnknownHostException, IOException{
+		requested_url = url;
+		URLInfo info = new URLInfo(url);
+		String host = info.getHostName();
+		int port = info.getPortNo();
+		
 		//HTTPS url
 		if(url.startsWith("https://")){
+			isSecure = true;
+			URL req_url = new URL(url);
+			HttpsURLConnection connection = (HttpsURLConnection) req_url.openConnection();
+			connection.setRequestMethod("HEAD");
+			connection.setRequestProperty("User-Agent", "cis455crawler");
 			
-			return "";
+			if(found_in_db){
+				SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
+				sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+				String d = sdf.format(last_hit);
+				connection.setRequestProperty("If-Modified-Since", d);
+			}
+			
+			if(connection.getResponseCode() == 304){
+				return "304";
+			}
+			
+			if(connection.getResponseCode() == 301){
+				String location = connection.getHeaderField("Location");
+				synchronized(UrlQueue.queue){
+					UrlQueue.queue.add(location);
+				}
+				return "301";
+			}
+			
+			if(connection.getResponseCode() != 200){
+				return "Error";
+			}
+			
+			//Check if content-length is greater than size requested by user
+			Integer length = connection.getContentLength();
+			if(length > size*1000000){
+				return "Error";
+			}
+			
+			String [] types = new String[]{"text/html","text/xml","application/xml"};
+			String type = connection.getContentType();
+			boolean f = false;
+			for(String t:types){
+				if(type.equals(t)){
+					mime_type = type;
+					f = true;
+					break;
+				}
+			}
+				
+			if(!f){
+				if(type.endsWith("+xml"))
+					mime_type = type;
+					f = true;
+			}
+				
+			//If MIME type returned does not match
+			if(!f){
+				return "Error";
+			}
+			
+			//HEAD Checks passed. Send GET request
+			boolean success = sendGet(host,port,info.getFilePath(),length);
+			if(success)
+				return "Success";
+			else
+				return "Error";
+			
+			
+			
 		}else{ //Plain url
-			URLInfo info = new URLInfo(url);
-			String host = info.getHostName();
-			int port = info.getPortNo();
-			
 			//Open socket connection
-			Socket socket = new Socket(host,port);
-			OutputStream output = socket.getOutputStream();
+			OutputStream output;
+			InputStream input;
 			
+			Socket socket = new Socket(host,port);
+			output = socket.getOutputStream();
+			input = socket.getInputStream();
+		
 			//Send Head Request
 			String head_request;
 			if(!found_in_db){
@@ -75,7 +149,6 @@ public class HttpClient {
 			output.write(head_request.getBytes());
 			
 			//Parse input
-			InputStream input = socket.getInputStream();
 			BufferedReader br = new BufferedReader(new InputStreamReader(input));
 			String initial_line = br.readLine();
 			
@@ -157,40 +230,69 @@ public class HttpClient {
 	}
 	
 	private boolean sendGet(String host, int port, String filepath, Integer len) throws IOException{
-		Socket socket_get = new Socket(host,port);
-		OutputStream output_get = socket_get.getOutputStream();
-		
-		String get_request = "GET "+filepath+" HTTP/1.0 /r/n"
-				+"User-Agent: cis455crawler /r/n/r/n";
-		output_get.write(get_request.getBytes());
-		
-		InputStream input_get = socket_get.getInputStream();
-		BufferedReader br_get = new BufferedReader(new InputStreamReader(input_get));
-		String initial_line = br_get.readLine();
-		
-		String line = br_get.readLine();
-		while(line!=null && !line.equals("")){
-			line = br_get.readLine();
-		}
-		
-		//Read the file
+		InputStream input_get;
+		BufferedReader br_get;
+		Socket socket_get = null;
 		String doc = null;
-		if(len!=null){
-			int total_read = 0;
-			int b;
-			StringBuilder s = new StringBuilder();
-			while(total_read<len && ((b = br_get.read())!=-1)){
-				s.append((char)b);
-				total_read++;
+		if(isSecure){
+			URL req_url = new URL(this.requested_url);
+			HttpsURLConnection connection = (HttpsURLConnection) req_url.openConnection();
+			connection.setRequestMethod("GET");
+			connection.setRequestProperty("User-Agent", "cis455crawler");
+			input_get = connection.getInputStream();
+			br_get = new BufferedReader(new InputStreamReader(input_get));
+			
+			//Read the file
+			if(len!=null){
+				int total_read = 0;
+				int b;
+				StringBuilder s = new StringBuilder();
+				while(total_read<len && ((b = br_get.read())!=-1)){
+					s.append((char)b);
+					total_read++;
+				}
+				doc = s.toString();
+				this.document = doc;
 			}
-			doc = s.toString();
-		}
+			
+			
+		}else{
+			socket_get = new Socket(host,port);
+			OutputStream output_get = socket_get.getOutputStream();
+			String get_request = "GET "+filepath+" HTTP/1.0 /r/n"
+					+"User-Agent: cis455crawler /r/n/r/n";
+			output_get.write(get_request.getBytes());
+			input_get = socket_get.getInputStream();
 		
-		socket_get.close();
+			br_get = new BufferedReader(new InputStreamReader(input_get));
+		
+			String line = br_get.readLine();
+			while(line!=null && !line.equals("")){
+				line = br_get.readLine();
+			}
+		
+			//Read the file
+			if(len!=null){
+				int total_read = 0;
+				int b;
+				StringBuilder s = new StringBuilder();
+				while(total_read<len && ((b = br_get.read())!=-1)){
+					s.append((char)b);
+					total_read++;
+				}
+				doc = s.toString();
+				this.document = doc;
+			}
+		}
+		if(!isSecure)
+			socket_get.close();
 		if(doc == null)
 			return false;
-		else
+		else{
+			if(mime_type.endsWith("html") || mime_type.endsWith("xml"))
+				System.out.println(requested_url+": Downloading");
 			return true;
+		}
 		
 	}
 	

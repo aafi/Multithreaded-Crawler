@@ -50,6 +50,7 @@ public class XPathCrawler {
 		 * Start threads
 		 */
 		//TODO
+		new CrawlerWorker().run();
 		
 	}
 	

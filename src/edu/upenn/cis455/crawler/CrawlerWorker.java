@@ -39,10 +39,10 @@ public class CrawlerWorker implements Runnable{
 			} //End of synchronized block
 			
 			//Check if the URL was already visited
-			synchronized(UrlQueue.visited){
-				if(UrlQueue.visited.contains(url))
-					continue;
-			}
+//			synchronized(UrlQueue.visited){
+//				if(UrlQueue.visited.contains(url))
+//					continue;
+//			}
 			
 			
 			/** Check if URL domain was hit before **/
@@ -115,6 +115,7 @@ public class CrawlerWorker implements Runnable{
 			if(result.equals("304")){
 				updated = false;
 				contents = db.getDomainInfo(url).getRaw_content();
+				System.out.println(url+": Not Modified");
 			}else if(result.equals("Success")){
 				contents = http_client.getDocument();
 			}
@@ -126,7 +127,8 @@ public class CrawlerWorker implements Runnable{
 			
 			//call appropriate parse function if robot.txt
 			if(isRobotTxt){
-				//TODO Call robot parse
+				//Parse robots.txt
+				RobotParser.parse(contents);
 			}else{
 				//Add information to database if updated
 				if(updated){

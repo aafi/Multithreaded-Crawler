@@ -88,12 +88,12 @@ public class DBWrapper {
 	 * @return boolean indicating presence or absence
 	 */
 	public boolean containsDomain(String url){
-		EntityCursor <DomainEntity> domain_pcursor = da.domain.entities();
-		
-		for(DomainEntity info : domain_pcursor){
-			if(info.getUrl().equals(url))
-				return true;
-		}
+//		EntityCursor <DomainEntity> domain_pcursor = da.domain.entities();
+//		
+//		for(DomainEntity info : domain_pcursor){
+//			if(info.getUrl().equals(url))
+//				return true;
+//		}
 		
 		return false;
 	}
