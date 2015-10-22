@@ -58,8 +58,9 @@ public class CrawlerWorker implements Runnable{
 			}
 			
 			boolean isRobotTxt = false;
-			if(DomainInfoList.contains(domain)){
+			if(RobotTxtMapping.contains(domain)){
 				//TODO check for disallowed links in robots.txt
+				
 				
 			}else{ //This domain was not hit before
 				
@@ -97,6 +98,7 @@ public class CrawlerWorker implements Runnable{
 			try {
 				result = http_client.doWork(url, XPathCrawler.size);
 			} catch (IOException e) {
+				System.out.println(e);
 				synchronized(UrlQueue.visited){
 					UrlQueue.visited.add(url);
 				}
@@ -128,7 +130,7 @@ public class CrawlerWorker implements Runnable{
 			//call appropriate parse function if robot.txt
 			if(isRobotTxt){
 				//Parse robots.txt
-				RobotParser.parse(contents);
+				RobotParser.parse(contents,domain);
 			}else{
 				//Add information to database if updated
 				if(updated){
@@ -138,19 +140,24 @@ public class CrawlerWorker implements Runnable{
 					}else{
 						entity = new DomainEntity();
 						entity.setUrl(url);
-						entity.setLast_checked(new Date());
 					}
 					
+//					System.out.println(contents);
+					entity.setLast_checked(new Date());
 					entity.setRaw_content(contents);
 					db.putDomainInfo(entity);
 				}
 			}
 			
+			System.out.println(db.containsDomain(url));
+			
 			if(http_client.getType().equals("text/html")){
 				//TODO call html parse
 			}
 			
-			
+//			if(RobotTxtMapping.contains(domain)){
+//				RobotTxtMapping.get(domain).info.print();
+//			}
 			
 			
 		} //End of while

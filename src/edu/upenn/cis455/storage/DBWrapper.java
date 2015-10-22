@@ -22,6 +22,7 @@ public class DBWrapper {
 	 */
 	public DBWrapper(String dir){
 		envDirectory = dir;
+		setup();
 	}
 	
 	/**
@@ -61,6 +62,7 @@ public class DBWrapper {
 	 * @param object to be added
 	 */
 	public void putDomainInfo(DomainEntity info){
+		System.out.println("Storing contents in db");
 		da.domain.put(info);
 	}
 	
@@ -88,29 +90,29 @@ public class DBWrapper {
 	 * @return boolean indicating presence or absence
 	 */
 	public boolean containsDomain(String url){
-//		EntityCursor <DomainEntity> domain_pcursor = da.domain.entities();
-//		
-//		for(DomainEntity info : domain_pcursor){
-//			if(info.getUrl().equals(url))
-//				return true;
-//		}
+		EntityCursor <DomainEntity> domain_pcursor = da.domain.entities();
+		
+		for(DomainEntity info : domain_pcursor){
+			if(info.getUrl().equals(url))
+				return true;
+		}
 		
 		return false;
 	}
 	
-//	public static void main(String [] args){
-//		String dir = args[0];
-//		DBWrapper db = new DBWrapper(dir);
-//		
-//		db.setup();
-////		LoginInfo info = new LoginInfo();
-////		info.setUsername("admin2");
-////		info.setPassword("admin2");
-//		
-////		db.putLoginInfo(info);
-//		
-//		LoginInfo result = db.getLoginInfo("admin2");
-//		System.out.println("Username: "+result.getUsername()+" Password: "+result.getPassword());
-//		db.shutdown();
-//	}
+	public static void main(String [] args){
+		String dir = "/home/cis455/git/hw2/testdb";
+		DBWrapper db = new DBWrapper(dir);
+		
+		db.setup();
+//		LoginInfo info = new LoginInfo();
+//		info.setUsername("admin2");
+//		info.setPassword("admin2");
+		
+//		db.putLoginInfo(info);
+		
+		DomainEntity result = db.getDomainInfo("https://dbappserv.cis.upenn.edu/crawltest.html");
+		System.out.println("Url: "+result.getUrl()+" raw content: "+result.getRaw_content());
+		db.shutdown();
+	}
 }

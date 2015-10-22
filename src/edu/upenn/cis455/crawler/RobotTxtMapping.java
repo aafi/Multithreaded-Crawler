@@ -1,9 +1,8 @@
 package edu.upenn.cis455.crawler;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
-public class DomainInfoList {
+public class RobotTxtMapping {
 	
 	private static HashMap <String,DomainInfo> mappings = new HashMap <String,DomainInfo>();
 	
@@ -18,6 +17,11 @@ public class DomainInfoList {
 		
 		return false;
 	}
+	
+	public static DomainInfo get(String domain){
+		return mappings.get(domain);
+	}
+	
 		
 //	private static ArrayList<DomainInfo> domain_list = new ArrayList<DomainInfo>();
 //	

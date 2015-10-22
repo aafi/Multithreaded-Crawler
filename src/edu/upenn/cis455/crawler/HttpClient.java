@@ -49,6 +49,7 @@ public class HttpClient {
 	 * @throws IOException
 	 */
 	public String doWork(String url, int size) throws UnknownHostException, IOException{
+		System.out.println(url);
 		requested_url = url;
 		URLInfo info = new URLInfo(url);
 		String host = info.getHostName();
@@ -124,6 +125,7 @@ public class HttpClient {
 			
 		}else{ //Plain url
 			//Open socket connection
+//			System.out.println("http");
 			OutputStream output;
 			InputStream input;
 			
@@ -151,7 +153,6 @@ public class HttpClient {
 			//Parse input
 			BufferedReader br = new BufferedReader(new InputStreamReader(input));
 			String initial_line = br.readLine();
-			
 			//Check if response is well formed
 			if(initial_line ==null || initial_line.length()!=3){
 				socket.close();
@@ -247,6 +248,9 @@ public class HttpClient {
 				int total_read = 0;
 				int b;
 				StringBuilder s = new StringBuilder();
+				if(len == -1)
+					len = Integer.MAX_VALUE;
+					
 				while(total_read<len && ((b = br_get.read())!=-1)){
 					s.append((char)b);
 					total_read++;

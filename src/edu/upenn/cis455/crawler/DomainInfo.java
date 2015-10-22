@@ -6,11 +6,17 @@ import edu.upenn.cis455.crawler.info.RobotsTxtInfo;
 
 public class DomainInfo {
 	
-	private RobotsTxtInfo info = null;
+	public RobotsTxtInfo info = null;
+	private Date last_hit = null;
 	
 	public void setInfo(RobotsTxtInfo info){
-		info = info;
+		this.info = info;
 	}
+	
+	public void setLastHit(Date date){
+		last_hit = date;
+	}
+	
 	
 	
 //	private String domainName = null;
