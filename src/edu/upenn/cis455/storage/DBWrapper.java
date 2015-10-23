@@ -14,7 +14,7 @@ public class DBWrapper {
 	
 	private static Environment myEnv;
 	private static EntityStore store;
-	private DataAccessor da;
+	private static DataAccessor da;
 	
 	/**
 	 * Sets the environment directory in the constructor
@@ -99,13 +99,25 @@ public class DBWrapper {
 		return false;
 	}
 	
-//	public static void main(String [] args){
-//		String dir = "/home/cis455/git/hw2/testdb";
-//		DBWrapper db = new DBWrapper(dir);
-//		
-//		db.setup();
-//		LoginInfo info = new LoginInfo();
-//		DomainEntity dom = new DomainEntity();
+	private static void printurls(){
+		EntityCursor <DomainEntity> domain_pcursor = da.domain.entities();
+		
+		for(DomainEntity info : domain_pcursor){
+			System.out.println(info.getUrl());
+		}
+	}
+	
+	public static void main(String [] args){
+		String dir = "/home/cis455/git/hw2/testdb";
+		DBWrapper db = new DBWrapper(dir);
+		
+		db.setup();
+//			LoginInfo info = new LoginInfo();
+////		DomainEntity dom = new DomainEntity();
+////		dom.setUrl("blah");
+////		dom.setRaw_content("blah");
+////		db.putDomainInfo(dom);
+		printurls();
 ////		info.setUsername("admin2");
 ////		info.setPassword("password");
 ////		dom.setUrl("admin2");
@@ -114,11 +126,11 @@ public class DBWrapper {
 ////		db.putLoginInfo(info);
 ////		db.putDomainInfo(dom);
 //		
-////		System.out.println(db.getDomainInfo("admin2").getRaw_content());
+////		System.out.println(db.getDomainInfo("https://dbappserv.cis.upenn.edu/crawltest.html").getRaw_content());
 ////		System.out.println(db.getLoginInfo("admin2").getPassword());
 //		
 ////		DomainEntity result = db.getDomainInfo("https://dbappserv.cis.upenn.edu/crawltest.html");
 ////		System.out.println("Url: "+result.getUrl()+" raw content: "+result.getRaw_content());
-//		db.shutdown();
-//	}
+		db.shutdown();
+	}
 }

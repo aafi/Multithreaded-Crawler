@@ -35,8 +35,8 @@ public class HttpClient {
 	}
 	
 	public HttpClient(boolean found_in_db, Date last_hit){
-		found_in_db = found_in_db;
-		last_hit = last_hit;
+		this.found_in_db = found_in_db;
+		this.last_hit = last_hit;
 	}
 	
 	/**
@@ -49,7 +49,6 @@ public class HttpClient {
 	 * @throws IOException
 	 */
 	public String doWork(String url, int size) throws UnknownHostException, IOException{
-//		System.out.println(url);
 		requested_url = url;
 		URLInfo info = new URLInfo(url);
 		String host = info.getHostName();
@@ -69,8 +68,8 @@ public class HttpClient {
 				String d = sdf.format(last_hit);
 				connection.setRequestProperty("If-Modified-Since", d);
 			}
-			System.out.println("url connection: "+connection.getURL().toString());
-			System.out.println("Response Code: "+connection.getResponseCode());
+			
+
 			if(connection.getResponseCode() == 304){
 				return "304";
 			}
@@ -80,6 +79,7 @@ public class HttpClient {
 				System.out.println("Redirected to: "+location);
 				synchronized(UrlQueue.queue){
 					UrlQueue.queue.add(location);
+					UrlQueue.queue.notifyAll();
 				}
 				return "301";
 			}
@@ -174,6 +174,7 @@ public class HttpClient {
 				System.out.println("Redirected to: "+location);
 				synchronized(UrlQueue.queue){
 					UrlQueue.queue.add(location);
+					UrlQueue.queue.notifyAll();
 				}
 				socket.close();
 				return "301";

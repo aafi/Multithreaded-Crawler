@@ -55,6 +55,7 @@ public class HtmlParser {
             String link_to_be_added = link.attr("abs:href");
             synchronized(UrlQueue.queue){
 				UrlQueue.queue.add(link_to_be_added);
+				UrlQueue.queue.notifyAll();
 			}
         }
 //		System.out.println("links size: "+links.size());
