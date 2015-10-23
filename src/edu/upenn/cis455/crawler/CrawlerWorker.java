@@ -199,6 +199,7 @@ public class CrawlerWorker implements Runnable{
 						
 						if(given_files > XPathCrawler.getNumFilesDownloaded()){
 							db.putDomainInfo(entity);
+							System.out.println("in worker Added: "+entity.getUrl());
 							XPathCrawler.incrementNumFiles();
 						}
 						type = entity.getType();

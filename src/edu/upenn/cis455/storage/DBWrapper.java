@@ -61,7 +61,7 @@ public class DBWrapper {
 	 * @param object to be added
 	 */
 	public void putDomainInfo(DomainEntity info){
-//		System.out.println("Storing contents in db");
+		System.out.println("Storing "+info.getUrl());
 		da.domain.put(info);
 	}
 	
@@ -99,12 +99,13 @@ public class DBWrapper {
 		return false;
 	}
 	
-	private static void printurls(){
+	private static int printurls(){
 		EntityCursor <DomainEntity> domain_pcursor = da.domain.entities();
-		
+		int total=0;
 		for(DomainEntity info : domain_pcursor){
-			System.out.println(info.getUrl());
+			total++;
 		}
+		return total;
 	}
 	
 	public static void main(String [] args){
@@ -117,7 +118,7 @@ public class DBWrapper {
 ////		dom.setUrl("blah");
 ////		dom.setRaw_content("blah");
 ////		db.putDomainInfo(dom);
-		printurls();
+		System.out.println(printurls());
 ////		info.setUsername("admin2");
 ////		info.setPassword("password");
 ////		dom.setUrl("admin2");
@@ -129,6 +130,7 @@ public class DBWrapper {
 ////		System.out.println(db.getDomainInfo("https://dbappserv.cis.upenn.edu/crawltest.html").getRaw_content());
 ////		System.out.println(db.getLoginInfo("admin2").getPassword());
 //		
+//		System.out.println(db.containsDomain("https://dbappserv.cis.upenn.edu/crawltest/bbc/frontpage.xml"));
 ////		DomainEntity result = db.getDomainInfo("https://dbappserv.cis.upenn.edu/crawltest.html");
 ////		System.out.println("Url: "+result.getUrl()+" raw content: "+result.getRaw_content());
 		db.shutdown();

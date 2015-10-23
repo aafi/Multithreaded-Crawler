@@ -60,46 +60,46 @@ public class XPathCrawler {
 		/**
 		 * Start threads
 		 */
-		CrawlerWorker worker = new CrawlerWorker(db);
-		worker.run();
-//		ArrayList<ThreadpoolThread> threadPool = new ArrayList<ThreadpoolThread>();
-//		  
-//		for(int i=0;i<MAX_THREADS;i++){
-//			 CrawlerWorker worker = new CrawlerWorker(db);
-//			 ThreadpoolThread thread = new ThreadpoolThread(worker);
-//			 threadPool.add(thread);
-//			  
-//		}
-//		
-//		while(true){
-//			Thread.sleep(10000);
-//			
-//			synchronized(UrlQueue.queue){
-//				if(!UrlQueue.queue.isEmpty()){
-//					shutdown = false;
-//				}
-//				
-//				for(ThreadpoolThread t : threadPool){
-//					if(!t.getWorker().isWaiting()){
-//						shutdown = false;
-//					}
-//				}
-//			}
-//			
-//			if(num_of_files!=-1){
-//				if(num_of_files <= getNumFilesDownloaded()){
-//					shutdown = true;
-//				}
-//			}
-//			
-//			if(shutdown){
-//				for(ThreadpoolThread t : threadPool){
-//					t.getWorker().setShutdown(true);
-//				}
-//				System.out.println("Shutdown");
-//				break;
-//			}
-//		}
+//		CrawlerWorker worker = new CrawlerWorker(db);
+//		worker.run();
+		ArrayList<ThreadpoolThread> threadPool = new ArrayList<ThreadpoolThread>();
+		  
+		for(int i=0;i<MAX_THREADS;i++){
+			 CrawlerWorker worker = new CrawlerWorker(db);
+			 ThreadpoolThread thread = new ThreadpoolThread(worker);
+			 threadPool.add(thread);
+			  
+		}
+		
+		while(true){
+			Thread.sleep(10000);
+			
+			synchronized(UrlQueue.queue){
+				if(!UrlQueue.queue.isEmpty()){
+					shutdown = false;
+				}
+				
+				for(ThreadpoolThread t : threadPool){
+					if(!t.getWorker().isWaiting()){
+						shutdown = false;
+					}
+				}
+			}
+			
+			if(num_of_files!=-1){
+				if(num_of_files <= getNumFilesDownloaded()){
+					shutdown = true;
+				}
+			}
+			
+			if(shutdown){
+				for(ThreadpoolThread t : threadPool){
+					t.getWorker().setShutdown(true);
+				}
+				System.out.println("Shutdown");
+				break;
+			}
+		}
 		
 	}
 	
