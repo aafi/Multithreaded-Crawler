@@ -2,6 +2,8 @@ package edu.upenn.cis455.crawler;
 
 import java.io.File;
 
+import edu.upenn.cis455.storage.DBWrapper;
+
 public class XPathCrawler {
 	
 	public static String dir;
@@ -47,10 +49,16 @@ public class XPathCrawler {
 		UrlQueue.queue.add(seed_url);
 		
 		/**
+		 * Setup db wrapper
+		 */
+		DBWrapper db = new DBWrapper(dir);
+		db.setup();
+		
+		/**
 		 * Start threads
 		 */
 		//TODO
-		new CrawlerWorker().run();
+		new CrawlerWorker(db).run();
 		
 	}
 	

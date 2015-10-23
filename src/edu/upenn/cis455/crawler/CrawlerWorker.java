@@ -1,6 +1,7 @@
 package edu.upenn.cis455.crawler;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
 import edu.upenn.cis455.crawler.info.URLInfo;
@@ -11,8 +12,8 @@ public class CrawlerWorker implements Runnable{
 	
 	private DBWrapper db;
 	
-	public CrawlerWorker(){
-		db = new DBWrapper(XPathCrawler.dir);
+	public CrawlerWorker(DBWrapper db){
+		this.db = db;
 	}
 	
 	/**
@@ -22,7 +23,7 @@ public class CrawlerWorker implements Runnable{
 		
 		while(true){
 			String url = null;
-			
+//			System.out.println(UrlQueue.queue.size());
 			synchronized(UrlQueue.queue){
 				if(!UrlQueue.queue.isEmpty()){
 					//Retrieve URL from the queue
@@ -38,29 +39,70 @@ public class CrawlerWorker implements Runnable{
 				}
 			} //End of synchronized block
 			
-			//Check if the URL was already visited
-//			synchronized(UrlQueue.visited){
-//				if(UrlQueue.visited.contains(url))
-//					continue;
-//			}
-			
 			
 			/** Check if URL domain was hit before **/
 			String domain = null;
 			String protocol = null;
 			
+			String path = null;
 			if(url.startsWith("http://")){
 				domain = new URLInfo(url).getHostName();
+				path = new URLInfo(url).getFilePath();
 				protocol = "http://";
 			}else if(url.startsWith("https://")){
 				domain = new UrlParse(url).getHostName();
+				path = new UrlParse(url).getFilePath();
 				protocol = "https://";
 			}
+//			System.out.println("Current url: "+url);
 			
 			boolean isRobotTxt = false;
 			if(RobotTxtMapping.contains(domain)){
-				//TODO check for disallowed links in robots.txt
+				String agent_match = RobotTxtMapping.getAgentMatch(domain);
+//				RobotTxtMapping.get(domain).info.print();
+				if(agent_match.equals("No agent found")){
+					//No matching user agent was found
+					continue;
+				}
+				DomainInfo dom = RobotTxtMapping.get(domain);
 				
+				int delay = dom.info.getCrawlDelay(agent_match);
+				Date last_hit = dom.getLastHit();
+				Date current_date = new Date();
+				
+				if((current_date.getTime() - last_hit.getTime()) < delay*1000){
+					synchronized(UrlQueue.queue){
+						UrlQueue.queue.add(url);
+					}
+					continue;
+				}
+				System.out.println("Current url: "+url);
+//				System.out.println(new Date().toString());
+				
+				boolean allowed = false;
+				if(dom.info.getAllowedLinks(agent_match)!=null){
+					if(dom.info.getAllowedLinks(agent_match).contains(path)){
+						allowed = true;
+					}
+				}
+				System.out.println("path: "+path);
+				boolean disallowed = false;
+				if(dom.info.getDisallowedLinks(agent_match)!=null){
+					for(String link : dom.info.getDisallowedLinks(agent_match)){
+						System.out.println("disallowed: "+link);
+						if(path.startsWith(link)){
+							System.out.println("disallow match");
+							disallowed = true;
+							break;
+						}
+					}
+				}
+				System.out.println();
+				if(disallowed && !allowed){
+					System.out.println(url+" disallowed");
+					continue;
+				}
+				//Check for crawl delay
 				
 			}else{ //This domain was not hit before
 				
@@ -99,16 +141,16 @@ public class CrawlerWorker implements Runnable{
 				result = http_client.doWork(url, XPathCrawler.size);
 			} catch (IOException e) {
 				System.out.println(e);
-				synchronized(UrlQueue.visited){
-					UrlQueue.visited.add(url);
-				}
+//				synchronized(UrlQueue.visited){
+//					UrlQueue.visited.add(url);
+//				}
 				continue;
 			}
 			
 			if(result.equals("Error") || result.equals("301")){
-				synchronized(UrlQueue.visited){
-					UrlQueue.visited.add(url);
-				}
+//				synchronized(UrlQueue.visited){
+//					UrlQueue.visited.add(url);
+//				}
 				continue;
 			}
 			
@@ -122,10 +164,10 @@ public class CrawlerWorker implements Runnable{
 				contents = http_client.getDocument();
 			}
 			
-			//add url to visited list
-			synchronized(UrlQueue.visited){
-				UrlQueue.visited.add(url);
-			}
+//			//add url to visited list
+//			synchronized(UrlQueue.visited){
+//				UrlQueue.visited.add(url);
+//			}
 			
 			//call appropriate parse function if robot.txt
 			if(isRobotTxt){
@@ -141,17 +183,19 @@ public class CrawlerWorker implements Runnable{
 						entity = new DomainEntity();
 						entity.setUrl(url);
 					}
-					
-					entity.setLast_checked(new Date());
+					Date date = new Date();
+					entity.setLast_checked(date);
 					entity.setRaw_content(contents);
 					db.putDomainInfo(entity);
+					//update last hit date in domain mapping
+					RobotTxtMapping.get(domain).setLastHit(date);
 				}
 			}
 			
 //			System.out.println(db.containsDomain(url));
 			
 			if(http_client.getType().equals("text/html")){
-				HtmlParser.parse(contents);
+				HtmlParser.parse(contents,url);
 			}
 			
 			

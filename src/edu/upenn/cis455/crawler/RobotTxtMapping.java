@@ -7,19 +7,34 @@ public class RobotTxtMapping {
 	private static HashMap <String,DomainInfo> mappings = new HashMap <String,DomainInfo>();
 	
 	public static void add(String url, DomainInfo info){
-		if(!contains(url))
-			mappings.put(url, info);
+		if(!contains(url)){
+			info.setAgentMatch("cis455crawler");
+			synchronized(mappings){
+				mappings.put(url, info);
+			}
+		}
 	}
 	
-	public static boolean contains(String url){
-		if(mappings.containsKey(url))
-			return true;
-		
-		return false;
+	public static boolean contains(String domain){
+		boolean found = false;
+		synchronized(mappings){
+			if(mappings.containsKey(domain))
+				found = true;
+		}
+		return found;
 	}
 	
 	public static DomainInfo get(String domain){
-		return mappings.get(domain);
+		DomainInfo dom;
+		synchronized(mappings){
+			dom = mappings.get(domain);
+		}
+		
+		return dom;
+	}
+	
+	public static String getAgentMatch(String domain){
+			return get(domain).getAgentMatch();
 	}
 	
 		

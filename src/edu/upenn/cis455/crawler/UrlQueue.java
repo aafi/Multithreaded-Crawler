@@ -12,6 +12,6 @@ public class UrlQueue {
 	
 	public static LinkedList<String> queue = new LinkedList<String>();
 	
-	public static Set<String> visited = new HashSet<String>();
+//	public static Set<String> visited = new HashSet<String>();
 	
 }

@@ -69,13 +69,15 @@ public class HttpClient {
 				String d = sdf.format(last_hit);
 				connection.setRequestProperty("If-Modified-Since", d);
 			}
-			
+			System.out.println("url connection: "+connection.getURL().toString());
+			System.out.println("Response Code: "+connection.getResponseCode());
 			if(connection.getResponseCode() == 304){
 				return "304";
 			}
 			
 			if(connection.getResponseCode() == 301){
 				String location = connection.getHeaderField("Location");
+				System.out.println("Redirected to: "+location);
 				synchronized(UrlQueue.queue){
 					UrlQueue.queue.add(location);
 				}
@@ -169,6 +171,7 @@ public class HttpClient {
 				return "304";
 			}else if(status_num.equals("301")){
 				String location = headers.get("location");
+				System.out.println("Redirected to: "+location);
 				synchronized(UrlQueue.queue){
 					UrlQueue.queue.add(location);
 				}

@@ -114,7 +114,7 @@ public class XPathServlet extends HttpServlet {
 				    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 				    tidy.parseDOM(inputStream, outputStream);
 				    doc = outputStream.toString("UTF-8");
-				    System.out.println("DATA is: \n"+doc);
+//				    System.out.println("DATA is: \n"+doc);
 				}
 				
 				Document d = Utilities.buildXmlDom(doc);

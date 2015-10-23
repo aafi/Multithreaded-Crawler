@@ -8,6 +8,7 @@ public class DomainInfo {
 	
 	public RobotsTxtInfo info = null;
 	private Date last_hit = null;
+	private String agent_match = null;
 	
 	public void setInfo(RobotsTxtInfo info){
 		this.info = info;
@@ -15,6 +16,25 @@ public class DomainInfo {
 	
 	public void setLastHit(Date date){
 		last_hit = date;
+	}
+	
+	public Date getLastHit(){
+		return last_hit;
+	}
+	
+	public void setAgentMatch(String agent){
+		if(info.containsUserAgent(agent)){
+			agent_match = agent;
+		}
+		else if(info.containsUserAgent("*")){
+			agent_match = "*";
+		}else{
+			agent_match = "No agent found";
+		}
+	}
+	
+	public String getAgentMatch(){
+		return agent_match;
 	}
 	
 	

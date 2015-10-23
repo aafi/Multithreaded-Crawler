@@ -22,7 +22,6 @@ public class DBWrapper {
 	 */
 	public DBWrapper(String dir){
 		envDirectory = dir;
-		setup();
 	}
 	
 	/**
@@ -105,14 +104,21 @@ public class DBWrapper {
 //		DBWrapper db = new DBWrapper(dir);
 //		
 //		db.setup();
-////		LoginInfo info = new LoginInfo();
+//		LoginInfo info = new LoginInfo();
+//		DomainEntity dom = new DomainEntity();
 ////		info.setUsername("admin2");
-////		info.setPassword("admin2");
-//		
+////		info.setPassword("password");
+////		dom.setUrl("admin2");
+////		dom.setRaw_content("some content");
+////		
 ////		db.putLoginInfo(info);
+////		db.putDomainInfo(dom);
 //		
-//		DomainEntity result = db.getDomainInfo("https://dbappserv.cis.upenn.edu/crawltest.html");
-//		System.out.println("Url: "+result.getUrl()+" raw content: "+result.getRaw_content());
+////		System.out.println(db.getDomainInfo("admin2").getRaw_content());
+////		System.out.println(db.getLoginInfo("admin2").getPassword());
+//		
+////		DomainEntity result = db.getDomainInfo("https://dbappserv.cis.upenn.edu/crawltest.html");
+////		System.out.println("Url: "+result.getUrl()+" raw content: "+result.getRaw_content());
 //		db.shutdown();
 //	}
 }
