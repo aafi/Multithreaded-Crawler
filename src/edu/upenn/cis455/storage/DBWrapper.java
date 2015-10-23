@@ -33,6 +33,8 @@ public class DBWrapper {
 		 
 		 envConfig.setAllowCreate(true);
 		 storeConfig.setAllowCreate(true);
+		 envConfig.setTransactional(true);
+		 storeConfig.setTransactional(true);
 		 
 		 myEnv = new Environment(new File(envDirectory),envConfig);
 		 store = new EntityStore(myEnv, "EntityStore", storeConfig);
@@ -61,7 +63,7 @@ public class DBWrapper {
 	 * @param object to be added
 	 */
 	public void putDomainInfo(DomainEntity info){
-		System.out.println("Storing "+info.getUrl());
+//		System.out.println("Storing "+info.getUrl());
 		da.domain.put(info);
 	}
 	

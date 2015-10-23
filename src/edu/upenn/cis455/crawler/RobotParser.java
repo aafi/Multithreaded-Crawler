@@ -51,7 +51,10 @@ public class RobotParser {
 		
 		DomainInfo dom = new DomainInfo();
 		dom.setInfo(info);
-		dom.setLastHit(new Date());
+		
+		synchronized(dom){
+			dom.setLastHit(new Date());
+		}
 		
 		RobotTxtMapping.add(domain_name, dom);
 	}

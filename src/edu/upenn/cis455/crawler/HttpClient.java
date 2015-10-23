@@ -59,8 +59,10 @@ public class HttpClient {
 			isSecure = true;
 			URL req_url = new URL(url);
 			HttpsURLConnection connection = (HttpsURLConnection) req_url.openConnection();
+			connection.setInstanceFollowRedirects(false);
 			connection.setRequestMethod("HEAD");
 			connection.setRequestProperty("User-Agent", "cis455crawler");
+			System.out.println("Sending head: "+new Date().toString()+"for "+url+" thread: "+Thread.currentThread().getName());
 			
 			if(found_in_db){
 				SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
@@ -76,7 +78,7 @@ public class HttpClient {
 			
 			if(connection.getResponseCode() == 301){
 				String location = connection.getHeaderField("Location");
-				System.out.println("Redirected to: "+location);
+//				System.out.println("Redirected to: "+location);
 				synchronized(UrlQueue.queue){
 					UrlQueue.queue.add(location);
 					UrlQueue.queue.notifyAll();

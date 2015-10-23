@@ -7,7 +7,7 @@ import edu.upenn.cis455.crawler.info.RobotsTxtInfo;
 public class DomainInfo {
 	
 	public RobotsTxtInfo info = null;
-	private Date last_hit = null;
+	public Date last_hit = null;
 	private String agent_match = null;
 	
 	public void setInfo(RobotsTxtInfo info){
@@ -15,11 +15,13 @@ public class DomainInfo {
 	}
 	
 	public void setLastHit(Date date){
-		last_hit = date;
+			last_hit = date;
+		
 	}
 	
 	public Date getLastHit(){
-		return last_hit;
+			return last_hit;
+		
 	}
 	
 	public void setAgentMatch(String agent){

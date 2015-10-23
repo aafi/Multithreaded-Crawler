@@ -80,8 +80,10 @@ public class XPathCrawler {
 				}
 				
 				for(ThreadpoolThread t : threadPool){
+//					System.out.println("Shutdown:"+t.getWorker().isWaiting()+" for "+t.getThread().getName());
 					if(!t.getWorker().isWaiting()){
 						shutdown = false;
+//						break;
 					}
 				}
 			}
@@ -96,11 +98,14 @@ public class XPathCrawler {
 				for(ThreadpoolThread t : threadPool){
 					t.getWorker().setShutdown(true);
 				}
+				UrlQueue.queue.notifyAll();
 				System.out.println("Shutdown");
 				break;
 			}
 		}
 		
+		db.shutdown();
+		System.out.println("Shut down");
 	}
 	
 	public static synchronized int getNumFilesDownloaded(){
