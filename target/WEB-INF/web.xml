@@ -61,5 +61,25 @@
      <servlet-name>session</servlet-name>
      <url-pattern>/session</url-pattern>
    </servlet-mapping>  
+   
+   <servlet>
+     <servlet-name>display</servlet-name>
+     <servlet-class>edu.upenn.cis455.servlet.DisplayServlet</servlet-class> 
+   </servlet>
+    
+   <servlet-mapping>
+     <servlet-name>display</servlet-name>
+     <url-pattern>/display</url-pattern>
+   </servlet-mapping>  
+   
+   <servlet>
+     <servlet-name>delete</servlet-name>
+     <servlet-class>edu.upenn.cis455.servlet.DeleteChannel</servlet-class> 
+   </servlet>
+    
+   <servlet-mapping>
+     <servlet-name>delete</servlet-name>
+     <url-pattern>/delete</url-pattern>
+   </servlet-mapping>  
 
 </web-app>

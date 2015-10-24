@@ -94,7 +94,6 @@ public class XPathCrawler {
 				}
 				
 				for(ThreadpoolThread t : threadPool){
-					System.out.println("Shutdown:"+t.getWorker().isWaiting()+" for "+t.getThread().getName());
 					if(!t.getWorker().isWaiting()){
 						shutdown = false;
 					}
@@ -116,7 +115,6 @@ public class XPathCrawler {
 					UrlQueue.queue.notifyAll();
 				}
 				
-				System.out.println("Shutting down");
 			}
 		}
 		
@@ -124,10 +122,10 @@ public class XPathCrawler {
 				t.getThread().join();
 			}
 		
-		System.out.println("all threads joined");
-		for(String url : db.getXpathInfo("/rss").getMatched_urls()){
-			System.out.println(url);
-		}
+//		System.out.println("all threads joined");
+//		for(String url : db.getXpathInfo("/rss").getMatched_urls()){
+//			System.out.println(url);
+//		}
 		db.shutdown();
 //		System.out.println("Shut down");
 	}

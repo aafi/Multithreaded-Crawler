@@ -15,7 +15,7 @@ import com.sleepycat.persist.model.PrimaryKey;
 public class XPathInfo {
 	
 	@PrimaryKey
-	String channel;
+	String xpath;
 	
 	ArrayList<String> matched_urls = new ArrayList<String>();
 	
@@ -29,12 +29,12 @@ public class XPathInfo {
 //		this.isValid = isValid;
 //	}
 
-	public String getChannel() {
-		return channel;
+	public String getXPath() {
+		return xpath;
 	}
 
-	public void setChannel(String channel) {
-		this.channel = channel;
+	public void setXPath(String XPath) {
+		this.xpath = XPath;
 	}
 
 	public ArrayList<String> getMatched_urls() {

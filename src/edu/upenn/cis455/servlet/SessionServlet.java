@@ -88,6 +88,11 @@ public class SessionServlet extends HttpServlet{
 				  +"<input type=\"submit\" value=\"Display Channels\">"
 				  +"</form>"
 				  +"<br><br>-----------------------------------------------------------------<br><br>"
+				  +"Delete a channel<br><br>"
+				  +"<form action=\"/servlet/delete\" method = \"get\">"
+				  +"<input type=\"submit\" value=\"Delete Channel\">"
+				  +"</form>"
+				  +"<br><br>-----------------------------------------------------------------<br><br>"
 				  +"Add a new channel<br><br>"
 				  +"<form action=\"/servlet/session\" method = \"post\">"
 				  +"Channel Name: <br>"
@@ -95,7 +100,11 @@ public class SessionServlet extends HttpServlet{
 				  +"XPaths: <br>"
 				  +"Please enter multiple xpaths separated by a semi-colon or ; <br>"
 				  +"<input type=\"text\" name=\"xpath\" <br> <br>"
-				  +"<input type=\"submit\" value=\"Create\">";
+				  +"<input type=\"submit\" value=\"Create\">"
+				  +"</form>"
+				  +"<br><br>-----------------------------------------------------------------<br><br>"
+				  +"<form action=\"/servlet/login\" method = \"get\">"
+				  +"<input type=\"submit\" name=\"logout\" value=\"Logout\">";
 	
 		String page = Utilities.createHTML("Channel", body);
 		response.setContentLength(page.length());

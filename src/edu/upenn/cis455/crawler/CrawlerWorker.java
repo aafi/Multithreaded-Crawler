@@ -1,5 +1,7 @@
 package edu.upenn.cis455.crawler;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -8,6 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.w3c.dom.Document;
+import org.w3c.tidy.Tidy;
 
 import edu.upenn.cis455.crawler.info.URLInfo;
 import edu.upenn.cis455.servlet.Utilities;
@@ -278,7 +281,12 @@ public class CrawlerWorker implements Runnable{
 				}
 				
 				if(type.endsWith("xml")){
-					matchDocument(contents,url);
+					try {
+						matchDocument(contents,url);
+					} catch (UnsupportedEncodingException e) {
+						System.out.println("Exception thrown");
+						e.printStackTrace();
+					}
 				}
 			
 			
@@ -288,7 +296,20 @@ public class CrawlerWorker implements Runnable{
 	} //End of run
 	
 	
-	public void matchDocument(String contents,String url){
+	public void matchDocument(String contents,String url) throws UnsupportedEncodingException{
+		Tidy tidy = new Tidy();
+		tidy.setInputEncoding("UTF-8");
+	    tidy.setOutputEncoding("UTF-8");
+	    tidy.setXmlTags(true);
+	    tidy.setXmlOut(true);
+	    tidy.setSmartIndent(true);
+	    tidy.setShowErrors(0);
+	    tidy.setShowWarnings(false);
+	    tidy.setQuiet(true);
+	    ByteArrayInputStream inputStream = new ByteArrayInputStream(contents.getBytes("UTF-8"));
+	    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+	    tidy.parseDOM(inputStream, outputStream);
+	    contents = outputStream.toString("UTF-8");
 		Document d = Utilities.buildXmlDom(contents);
 		
 		Set <String> xpath_set = new HashSet<String>();

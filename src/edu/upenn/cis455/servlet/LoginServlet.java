@@ -44,6 +44,11 @@ public class LoginServlet extends HttpServlet{
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException{
 		PrintWriter out = response.getWriter();
 		response.setContentType("text/html");
+		
+		if(request.getSession(false)!=null){
+			request.getSession().invalidate();
+		}
+
 		String header = "Welcome!<br>Please login<br><br>";
 		
 		String body = header

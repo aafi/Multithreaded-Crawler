@@ -162,6 +162,14 @@ public class DBWrapper {
 		return da.xpath.get(xpath);
 	}
 	
+	/**
+	 * Deletes a channel
+	 * @param name
+	 */
+	public void deleteChannel(String name){
+		da.channel.delete(name);
+	}
+	
 //	/**
 //	 * Checks if the database contains the url content
 //	 * @param url to be checked
