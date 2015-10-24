@@ -10,7 +10,7 @@ public class XPathCrawler {
 	public static String dir;
 	public static int size;
 	private static final int MAX_THREADS = 10;
-	private static boolean shutdown = true;
+	private static boolean shutdown;
 	public static int num_downloaded = 0;
 	public static int num_of_files = -1;
 	
@@ -71,19 +71,21 @@ public class XPathCrawler {
 			  
 		}
 		
-		while(true){
+		shutdown = false;
+		
+		while(!shutdown){
 			Thread.sleep(10000);
-			
+			shutdown = true;
 			synchronized(UrlQueue.queue){
+//				UrlQueue.queue.notifyAll();
 				if(!UrlQueue.queue.isEmpty()){
 					shutdown = false;
 				}
 				
 				for(ThreadpoolThread t : threadPool){
-//					System.out.println("Shutdown:"+t.getWorker().isWaiting()+" for "+t.getThread().getName());
+//					System.out.println("Shutdown:"+t.getWorker().isShutdown()+" for "+t.getThread().getName());
 					if(!t.getWorker().isWaiting()){
 						shutdown = false;
-//						break;
 					}
 				}
 			}
@@ -98,14 +100,19 @@ public class XPathCrawler {
 				for(ThreadpoolThread t : threadPool){
 					t.getWorker().setShutdown(true);
 				}
-				UrlQueue.queue.notifyAll();
-				System.out.println("Shutdown");
-				break;
+				
+				synchronized(UrlQueue.queue){
+					UrlQueue.queue.notifyAll();
+				}
 			}
 		}
 		
+		 for(ThreadpoolThread t : threadPool){
+				t.getThread().join();
+			}
+		
 		db.shutdown();
-		System.out.println("Shut down");
+//		System.out.println("Shut down");
 	}
 	
 	public static synchronized int getNumFilesDownloaded(){

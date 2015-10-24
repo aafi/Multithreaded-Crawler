@@ -62,7 +62,7 @@ public class HttpClient {
 			connection.setInstanceFollowRedirects(false);
 			connection.setRequestMethod("HEAD");
 			connection.setRequestProperty("User-Agent", "cis455crawler");
-			System.out.println("Sending head: "+new Date().toString()+"for "+url+" thread: "+Thread.currentThread().getName());
+//			System.out.println("Sending head: "+new Date().toString()+"for "+url+" thread: "+Thread.currentThread().getName());
 			
 			if(found_in_db){
 				SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");

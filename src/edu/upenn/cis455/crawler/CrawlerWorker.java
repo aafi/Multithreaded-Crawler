@@ -11,7 +11,7 @@ import edu.upenn.cis455.storage.DomainEntity;
 public class CrawlerWorker implements Runnable{
 	
 	private DBWrapper db;
-	private boolean shutdown = false;
+	private static boolean shutdown = false;
 	private boolean waiting = false;
 	
 	public CrawlerWorker(DBWrapper db){
@@ -137,7 +137,7 @@ public class CrawlerWorker implements Runnable{
 				
 				boolean found_in_db = false;
 				HttpClient http_client;
-				if(db.containsDomain(url)){
+				if(db.getDomainInfo(url)!=null){
 //					System.out.println("cached in db");
 					found_in_db = true;
 					Date last_hit = db.getDomainInfo(url).getLast_checked();
@@ -245,7 +245,6 @@ public class CrawlerWorker implements Runnable{
 						
 						if(given_files > XPathCrawler.getNumFilesDownloaded()){
 							db.putDomainInfo(entity);
-							System.out.println("in worker Added: "+entity.getUrl());
 							XPathCrawler.incrementNumFiles();
 						}
 						type = entity.getType();
@@ -271,6 +270,7 @@ public class CrawlerWorker implements Runnable{
 			
 			}
 		} //End of while
+//		System.out.println("While exited for thread "+Thread.currentThread().getName());
 	} //End of run
 
 	public boolean isWaiting() {
