@@ -41,5 +41,25 @@
      <servlet-name>register</servlet-name>
      <url-pattern>/register</url-pattern>
    </servlet-mapping>  
+   
+   <servlet>
+     <servlet-name>channels</servlet-name>
+     <servlet-class>edu.upenn.cis455.servlet.ChannelServlet</servlet-class> 
+   </servlet>
+    
+   <servlet-mapping>
+     <servlet-name>channels</servlet-name>
+     <url-pattern>/channels</url-pattern>
+   </servlet-mapping> 
+   
+   <servlet>
+     <servlet-name>session</servlet-name>
+     <servlet-class>edu.upenn.cis455.servlet.SessionServlet</servlet-class> 
+   </servlet>
+    
+   <servlet-mapping>
+     <servlet-name>session</servlet-name>
+     <url-pattern>/session</url-pattern>
+   </servlet-mapping>  
 
 </web-app>

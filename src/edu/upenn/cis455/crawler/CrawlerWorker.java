@@ -2,11 +2,21 @@ package edu.upenn.cis455.crawler;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.w3c.dom.Document;
 
 import edu.upenn.cis455.crawler.info.URLInfo;
+import edu.upenn.cis455.servlet.Utilities;
+import edu.upenn.cis455.storage.ChannelInfo;
 import edu.upenn.cis455.storage.DBWrapper;
 import edu.upenn.cis455.storage.DomainEntity;
+import edu.upenn.cis455.storage.XPathInfo;
+import edu.upenn.cis455.xpathengine.XPathEngineFactory;
+import edu.upenn.cis455.xpathengine.XPathEngineImpl;
 
 public class CrawlerWorker implements Runnable{
 	
@@ -266,13 +276,56 @@ public class CrawlerWorker implements Runnable{
 				if(type.equals("text/html")){
 					HtmlParser.parse(contents,url);
 				}
+				
+				if(type.endsWith("xml")){
+					matchDocument(contents,url);
+				}
 			
 			
 			}
 		} //End of while
 //		System.out.println("While exited for thread "+Thread.currentThread().getName());
 	} //End of run
-
+	
+	
+	public void matchDocument(String contents,String url){
+		Document d = Utilities.buildXmlDom(contents);
+		
+		Set <String> xpath_set = new HashSet<String>();
+		ArrayList<ChannelInfo> channels = db.getAllChannels();
+		
+		for(ChannelInfo info:channels){
+			for(String path : info.getXpaths()){
+				xpath_set.add(path);
+			}
+		}
+		
+		String [] xpath_list = xpath_set.toArray(new String[xpath_set.size()]);
+		//Get an object of XPathEngineImpl
+		XPathEngineImpl xpath = (XPathEngineImpl) XPathEngineFactory.getXPathEngine();
+		
+		//Set the queries to be evaluated
+		xpath.setXPaths(xpath_list);
+		xpath.setHtml(false);
+	
+		//Evaluate the document for matching queries
+		boolean [] match = xpath.evaluate(d);
+		for(int i=0;i<match.length;i++){
+			XPathInfo xi = db.getXpathInfo(xpath_list[i]);
+			
+			if(xi == null)
+				xi = new XPathInfo();
+			
+			ArrayList<String> url_match = xi.getMatched_urls();
+			if(match[i] == true){
+				url_match.add(url);
+				xi.setMatched_urls(url_match);
+				db.putXPathInfo(xi);
+			}
+		}
+	
+	}
+	
 	public boolean isWaiting() {
 		return waiting;
 	}

@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import edu.upenn.cis455.storage.DBWrapper;
 import edu.upenn.cis455.storage.LoginInfo;
@@ -28,6 +29,9 @@ public class RegisterServlet extends HttpServlet{
 			db.putLoginInfo(info);
 			db.shutdown();
 			//Route to success page
+			HttpSession session = request.getSession(true);
+			session.setAttribute("username", username);
+			new SessionServlet().doGet(request, response);
 		}else{
 			db.shutdown();
 			invalid(request,response);

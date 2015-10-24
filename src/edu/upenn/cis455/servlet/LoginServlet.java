@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import edu.upenn.cis455.storage.DBWrapper;
 import edu.upenn.cis455.storage.LoginInfo;
@@ -25,8 +26,10 @@ public class LoginServlet extends HttpServlet{
 		if((log = db.getLoginInfo(username))!=null){
 			if(log.getPassword().equals(password)){
 				db.shutdown();
-				response.getWriter().write("Success!");
 				//Route to login page
+				HttpSession session = request.getSession(true);
+				session.setAttribute("username", username);
+				new SessionServlet().doGet(request, response);
 			}else{
 				db.shutdown();
 				invalid(request,response);
@@ -54,7 +57,12 @@ public class LoginServlet extends HttpServlet{
 				  +"<br><br>-----------------------------------------------------------------<br><br>"
 				  +"<br><br>Do not have an account? Register!<br><br>"
 				  +"<form action=\"/servlet/register\" method = \"get\">"
-				  +"<input type=\"submit\" value=\"Register\">";
+				  +"<input type=\"submit\" value=\"Register\">"
+				  +"</form>"
+				  +"<br><br>-----------------------------------------------------------------<br><br>"
+				  +"Show me all the channels available!<br>"
+				  +"<form action=\"/servlet/channels\" method = \"get\">"
+				  +"<input type=\"submit\" value=\"Show!\">";
 		
 		String page = Utilities.createHTML("Login", body);
 		response.setContentLength(page.length());

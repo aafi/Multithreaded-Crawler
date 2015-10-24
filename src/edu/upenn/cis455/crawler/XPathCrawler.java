@@ -3,6 +3,7 @@ package edu.upenn.cis455.crawler;
 import java.io.File;
 import java.util.ArrayList;
 
+import edu.upenn.cis455.storage.ChannelInfo;
 import edu.upenn.cis455.storage.DBWrapper;
 
 public class XPathCrawler {
@@ -57,6 +58,16 @@ public class XPathCrawler {
 		DBWrapper db = new DBWrapper(dir);
 		db.setup();
 		
+		/**Debug delete**/
+		ChannelInfo inf = new ChannelInfo();
+		inf.setChannel("name");
+		inf.setUsername("admin2");
+		ArrayList<String> xpath = new ArrayList<String>();
+		xpath.add("/rss");
+		inf.setXpaths(xpath);
+		db.putChannelInfo(inf);
+		/**Debug delete**/
+		
 		/**
 		 * Start threads
 		 */
@@ -83,7 +94,7 @@ public class XPathCrawler {
 				}
 				
 				for(ThreadpoolThread t : threadPool){
-//					System.out.println("Shutdown:"+t.getWorker().isShutdown()+" for "+t.getThread().getName());
+					System.out.println("Shutdown:"+t.getWorker().isWaiting()+" for "+t.getThread().getName());
 					if(!t.getWorker().isWaiting()){
 						shutdown = false;
 					}
@@ -104,6 +115,8 @@ public class XPathCrawler {
 				synchronized(UrlQueue.queue){
 					UrlQueue.queue.notifyAll();
 				}
+				
+				System.out.println("Shutting down");
 			}
 		}
 		
@@ -111,6 +124,10 @@ public class XPathCrawler {
 				t.getThread().join();
 			}
 		
+		System.out.println("all threads joined");
+		for(String url : db.getXpathInfo("/rss").getMatched_urls()){
+			System.out.println(url);
+		}
 		db.shutdown();
 //		System.out.println("Shut down");
 	}

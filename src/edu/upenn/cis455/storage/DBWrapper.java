@@ -1,6 +1,7 @@
 package edu.upenn.cis455.storage;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
@@ -70,6 +71,22 @@ public class DBWrapper {
 	}
 	
 	/**
+	 * Puts channel info in the database
+	 * @param info
+	 */
+	public void putChannelInfo(ChannelInfo info){
+		da.channel.put(info);
+	}
+	
+	/**
+	 * Puts Xpath info into the database
+	 * @param info
+	 */
+	public void putXPathInfo(XPathInfo info){
+		da.xpath.put(info);
+	}
+	
+	/**
 	 * Gets the login information from the database
 	 * @param key to be looked up
 	 * @return LoginInfo
@@ -85,6 +102,64 @@ public class DBWrapper {
 	 */
 	public DomainEntity getDomainInfo(String url){
 		return da.domain.get(url);
+	}
+	
+	/**
+	 * Returns the channel info looked up by channel name
+	 * @param name
+	 * @return channel info object
+	 */
+	
+	public ChannelInfo getChannelInfo(String name){
+		return da.channel.get(name);
+	}
+	
+	/**
+	 * Returns all the channels present in the database
+	 * @param channel
+	 * @return
+	 */
+	public ArrayList<ChannelInfo> getAllChannels(){
+		ArrayList<ChannelInfo> channel_list = new ArrayList<ChannelInfo>();
+		EntityCursor<ChannelInfo> cursor = da.channel.entities();
+		try{
+			for(ChannelInfo ci : cursor){
+				channel_list.add(ci);
+			}
+		}finally{
+			cursor.close();
+		}
+		
+		return channel_list;
+	}
+	
+	/**
+	 * Returns a list of channel info objects based on the usernames
+	 * @param username
+	 * @return
+	 */
+	public ArrayList<ChannelInfo> getChannelsByUser(String username){
+		ArrayList<ChannelInfo> channel_list = new ArrayList<ChannelInfo>();
+		EntityCursor<ChannelInfo> sec_cursor = da.channel_by_user.subIndex(username).entities();
+		try{
+			for(ChannelInfo channel : sec_cursor){
+				channel_list.add(channel);
+			}
+		}finally{
+			sec_cursor.close();
+		}
+		
+		return channel_list;
+	}
+	
+	/**
+	 * Returns xpath info based on the xpath string
+	 * @param xpath
+	 * @return
+	 */
+	
+	public XPathInfo getXpathInfo(String xpath){
+		return da.xpath.get(xpath);
 	}
 	
 //	/**
