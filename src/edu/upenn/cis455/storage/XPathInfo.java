@@ -19,15 +19,6 @@ public class XPathInfo {
 	
 	ArrayList<String> matched_urls = new ArrayList<String>();
 	
-//	boolean isValid;
-//
-//	public boolean isValid() {
-//		return isValid;
-//	}
-//
-//	public void setValid(boolean isValid) {
-//		this.isValid = isValid;
-//	}
 
 	public String getXPath() {
 		return xpath;

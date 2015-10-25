@@ -32,9 +32,13 @@ public class CheckDocumentMatch {
 	 * @return whether the xpath matches the document
 	 */
 	public boolean checkMatch(LinkedList <DocumentNodes> node_list, int idx, Node node){
-		if(node == null || idx >= node_list.size())
+		if(node == null){
 			return false;
+		}
 		
+		if(idx >= node_list.size()){
+			return true;
+		}
 		DocumentNodes entry = node_list.get(idx);
 		
 		String entryName = entry.getName();
@@ -53,7 +57,6 @@ public class CheckDocumentMatch {
 		if(entry.getFilter().size() == 0){
 			NodeList children = node.getChildNodes();
 			int number_of_children = node.getChildNodes().getLength();
-			
 			if(number_of_children == 0){
 				return true;
 			}else{

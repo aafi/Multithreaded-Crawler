@@ -321,6 +321,8 @@ public class CrawlerWorker implements Runnable{
 			}
 		}
 		
+//		xpath_set.add("/rss");
+		
 		String [] xpath_list = xpath_set.toArray(new String[xpath_set.size()]);
 		//Get an object of XPathEngineImpl
 		XPathEngineImpl xpath = (XPathEngineImpl) XPathEngineFactory.getXPathEngine();
@@ -334,17 +336,19 @@ public class CrawlerWorker implements Runnable{
 		for(int i=0;i<match.length;i++){
 			XPathInfo xi = db.getXpathInfo(xpath_list[i]);
 			
-			if(xi == null)
+			if(xi == null){
 				xi = new XPathInfo();
+				xi.setXPath(xpath_list[i]);
+			}
 			
 			ArrayList<String> url_match = xi.getMatched_urls();
 			if(match[i] == true){
 				url_match.add(url);
 				xi.setMatched_urls(url_match);
-				db.putXPathInfo(xi);
 			}
+			
+			db.putXPathInfo(xi);
 		}
-	
 	}
 	
 	public boolean isWaiting() {

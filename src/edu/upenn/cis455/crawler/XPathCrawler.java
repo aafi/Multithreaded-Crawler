@@ -10,7 +10,7 @@ public class XPathCrawler {
 	
 	public static String dir;
 	public static int size;
-	private static final int MAX_THREADS = 10;
+	private static final int MAX_THREADS = 1;
 	private static boolean shutdown;
 	public static int num_downloaded = 0;
 	public static int num_of_files = -1;

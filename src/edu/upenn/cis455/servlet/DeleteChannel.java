@@ -46,10 +46,11 @@ public class DeleteChannel extends HttpServlet {
 			db.deleteChannel(channel_name);
 			page.append("Channel deleted");
 		}
+		db.shutdown();
 		String contents = Utilities.createHTML("ChannelDisplay", page.toString());
 		response.getWriter().write(contents);
 		
-		db.shutdown();
+		
 	}
 	
 	@Override

@@ -45,33 +45,48 @@ public class DisplayServlet extends HttpServlet {
 		
 		String channel_name = request.getParameter("channel_name");
 		
-		String username = (String) request.getSession(false).getAttribute("username");
-		ArrayList <ChannelInfo> channels = db.getChannelsByUser(username);
-		boolean contains = false;
-		for(ChannelInfo chan : channels){
-			if(chan.getChannel().equals(channel_name)){
-				contains = true;
-				break;
-			}
-		}
+		if(request.getSession(false) == null){
+			String body = 
+					  "You are not logged in!<br><br>"
+					  +"<form action=\"/servlet/login\" method = \"get\">"
+					  +"<input type=\"submit\" value=\"Login\">"
+					  +"</form>";
 		
-		if(!contains){
-			page.append("Oops! You do not have permission to view that channel!<br>");
+			page.append(Utilities.createHTML("Channel", body));
 		}else{
 		
-			ArrayList<String> xpaths = db.getChannelInfo(channel_name).getXpaths();
-			for(String xpath : xpaths){
-				ArrayList <String> url_matches = db.getXpathInfo(xpath).getMatched_urls();
-				for(String url : url_matches){
-					Date date = db.getDomainInfo(url).getLast_checked();
-					String contents = db.getDomainInfo(url).getRaw_content();
-					String formatted_date = getFormattedDate(date);
-					page.append("Crawled on: "+formatted_date+"<br>");
-					page.append("Location: "+url+"<br>");
-					page.append("<div style=\"color:#0000FF\">");
-					page.append("<textarea style=\"border: 0\">");
-					page.append(contents);
-					page.append("</div>");
+			String username = (String) request.getSession(false).getAttribute("username");
+			ArrayList <ChannelInfo> channels = db.getChannelsByUser(username);
+			boolean contains = false;
+			for(ChannelInfo chan : channels){
+				if(chan.getChannel().equals(channel_name)){
+					contains = true;
+					break;
+				}
+			}
+			
+			if(!contains){
+				page.append("Oops! You do not have permission to view that channel!<br>");
+			}else{
+				boolean exists = true;
+				ArrayList<String> xpaths = db.getChannelInfo(channel_name).getXpaths();
+				for(String xpath : xpaths){
+					if(db.getXpathInfo(xpath)==null){
+						exists = false;
+						page.append("No documents matched yet");
+					}else{
+						ArrayList <String> url_matches = db.getXpathInfo(xpath).getMatched_urls();
+						for(String url : url_matches){
+							Date date = db.getDomainInfo(url).getLast_checked();
+							String contents = db.getDomainInfo(url).getRaw_content();
+							String formatted_date = getFormattedDate(date);
+							page.append("Crawled on: "+formatted_date+"<br>");
+							page.append("Location: "+url+"<br>");
+							page.append("<div style=\"color:#0000FF\">");
+							page.append(encodeHtml(contents));
+							page.append("</div>");
+						}
+					}
 				}
 			}
 		}
@@ -79,6 +94,22 @@ public class DisplayServlet extends HttpServlet {
 		response.getWriter().write(contents);
 		
 		db.shutdown();
+	}
+	
+	private static String encodeHtml(String s) {
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i < s.length(); i++) {
+			char c = s.charAt(i);
+			if (c == '&' || c == '"' || c == '<' || c == '>' || c == '\'') {
+				sb.append("&#" + (int) c + ";");
+				if(c == '>'){
+					sb.append("\n");
+				}
+			} else {
+				sb.append(c);
+			}
+		}
+		return sb.toString();
 	}
 	
 	private String getFormattedDate(Date date) {
