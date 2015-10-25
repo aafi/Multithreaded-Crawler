@@ -49,7 +49,6 @@ public class CrawlerWorker implements Runnable{
 						waiting = true;
 						UrlQueue.queue.wait();
 					} catch (InterruptedException e) {
-						//TODO handle interrupt ?
 						break;
 					}
 				}

@@ -64,38 +64,6 @@ public class HtmlParser {
 		
 	}
 	
-//	private static void extractLinks(Document doc){
-//		NodeList list = doc.getElementsByTagName("a");
-//		int size = list.getLength();
-//		
-//		for(int i=0;i<size;i++){
-//			String link_to_be_added = null;
-//			boolean found = false;
-//			NamedNodeMap attrs = list.item(i).getAttributes();
-//			if(attrs == null)
-//				return;
-//			
-//			if(attrs.getLength() == 0)
-//				return;
-//			
-//			for(int j = 0;j<attrs.getLength();j++){
-//				Attr attr = (Attr) attrs.item(j);
-//				String attrname = attr.getName();
-//				
-//				if(attrname.equals("href")){
-//					String link = attr.getValue();
-////					System.out.println(link);
-//					if(link.startsWith("http")){
-//						link_to_be_added = link;
-//						found = true;
-//					}else if(!link.startsWith("#")){
-//						link_to_be_added = url+"/"+link;
-//					}
-//				}
-//			}
-//			
-//			System.out.println(link_to_be_added);
-//		}
-	}
+}
 
 

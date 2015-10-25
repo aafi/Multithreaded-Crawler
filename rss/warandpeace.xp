@@ -1,0 +1,1 @@
+/rss[@version="2.0"]//title[contains(text(),"war") or contains(text(),"peace")] | description[contains(text(),"war") or contains(text(),"peace")]

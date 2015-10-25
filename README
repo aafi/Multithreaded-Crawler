@@ -6,13 +6,11 @@ Which features did you implement?
 	Entire Assignment
 Did you complete any extra-credit tasks? If so, which ones?
   (list extra-credit tasks)
-No
+	MultiThreaded Crawler
 
 Any special instructions for building and running your solution?
   (include detailed instructions, or write 'None')
-Since I used Jetty to test my code, the url mapping for the XPath servlet is "/servlet/xpath".
-This is where my form in doGet routes the Post request to.
-If needed, please change the form action on line 177 of XPathServlet.java.
+Please note relative path for starting my web interface is /servlet/login
 
 Did you personally write _all_ the code you are submitting
 (other than code from the course web page)?
